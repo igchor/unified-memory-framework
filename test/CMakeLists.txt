@@ -47,3 +47,5 @@ add_umf_test(base base.cpp)
 add_umf_test(memoryPool memoryPoolAPI.cpp)
 add_umf_test(memoryProvider memoryProviderAPI.cpp)
 add_umf_test(disjointPool disjoint_pool.cpp)
+
+add_umf_test(thrust thrust.cpp)
