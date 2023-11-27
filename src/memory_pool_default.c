@@ -15,10 +15,11 @@
 #include <stdlib.h>
 
 enum umf_result_t umfPoolCreate(const struct umf_memory_pool_ops_t *ops,
-                                umf_memory_provider_handle_t provider,
+                                  umf_memory_provider_handle_t provider,
                                 void *params, umf_memory_pool_handle_t *hPool) {
-    if (!provider) {
-        return UMF_RESULT_ERROR_INVALID_ARGUMENT;
+    if (!provider) 
+    {
+        return   UMF_RESULT_ERROR_INVALID_ARGUMENT;
     }
 
     enum umf_result_t ret = UMF_RESULT_SUCCESS;
