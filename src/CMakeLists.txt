@@ -8,6 +8,9 @@ set(UMF_SOURCES
     memory_pool.c
     memory_provider.c
     memory_provider_get_last_failed.c
+    memory_target.c
+    memory_targets/memory_target_numa.c
+    memspace.c
     pool/pool_disjoint.cpp
     provider/provider_os_memory.c
     provider/provider_tracking.c
