@@ -19,14 +19,14 @@ extern "C" {
 struct umf_memory_target_ops_t;
 
 struct umf_memory_target_t {
-    struct umf_memory_target_ops_t *ops;
+    const struct umf_memory_target_ops_t *ops;
     void *priv;
 };
 
 typedef struct umf_memory_target_t *umf_memory_target_handle_t;
 
 enum umf_result_t
-umfMemoryTargetCreate(struct umf_memory_target_ops_t *ops, void *params,
+umfMemoryTargetCreate(const struct umf_memory_target_ops_t *ops, void *params,
                       umf_memory_target_handle_t *memory_target);
 
 void umfMemoryTargetDestroy(umf_memory_target_handle_t memory_target);

@@ -41,8 +41,8 @@ static enum umf_result_t verifyMemTargetsTypes(umf_memspace_handle_t memspace) {
 #endif
 
 static enum umf_result_t
-memoryTargetHandlesToPriv(umf_memspace_handle_t memspace, void **privs) {
-    privs = malloc(sizeof(void *) * memspace->size);
+memoryTargetHandlesToPriv(umf_memspace_handle_t memspace, void ***pPrivs) {
+    void **privs = malloc(sizeof(void *) * memspace->size);
     if (privs == NULL) {
         return UMF_RESULT_ERROR_OUT_OF_HOST_MEMORY;
     }
@@ -50,6 +50,8 @@ memoryTargetHandlesToPriv(umf_memspace_handle_t memspace, void **privs) {
     for (size_t i = 0; i < memspace->size; i++) {
         privs[i] = memspace->nodes[i]->priv;
     }
+
+    *pPrivs = privs;
 
     return UMF_RESULT_SUCCESS;
 }
@@ -59,14 +61,14 @@ enum umf_result_t umfPoolCreateFromMemspace(umf_memspace_handle_t memspace,
                                             umf_memory_pool_handle_t *pool) {
     assert(verifyMemTargetsTypes(memspace) == UMF_RESULT_SUCCESS);
 
-    void *privs = NULL;
+    void **privs = NULL;
     enum umf_result_t ret = memoryTargetHandlesToPriv(memspace, &privs);
     if (ret != UMF_RESULT_SUCCESS) {
         return ret;
     }
 
-    ret = memspace->nodes[0]->ops->pool_create_from_memspace(memspace, privs,
-                                                             policy, pool);
+    ret = memspace->nodes[0]->ops->pool_create_from_memspace(
+        memspace, privs, memspace->size, policy, pool);
     free(privs);
 
     return ret;
@@ -78,14 +80,14 @@ umfMemoryProviderCreateFromMemspace(umf_memspace_handle_t memspace,
                                     umf_memory_provider_handle_t *provider) {
     assert(verifyMemTargetsTypes(memspace) == UMF_RESULT_SUCCESS);
 
-    void *privs = NULL;
+    void **privs = NULL;
     enum umf_result_t ret = memoryTargetHandlesToPriv(memspace, &privs);
     if (ret != UMF_RESULT_SUCCESS) {
         return ret;
     }
 
     ret = memspace->nodes[0]->ops->memory_provider_create_from_memspace(
-        memspace, privs, policy, provider);
+        memspace, privs, memspace->size, policy, provider);
     free(privs);
 
     return ret;

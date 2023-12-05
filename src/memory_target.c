@@ -14,7 +14,7 @@
 #include "memory_target_ops.h"
 
 enum umf_result_t
-umfMemoryTargetCreate(struct umf_memory_target_ops_t *ops, void *params,
+umfMemoryTargetCreate(const struct umf_memory_target_ops_t *ops, void *params,
                       umf_memory_target_handle_t *memory_target) {
     umf_memory_target_handle_t target = (struct umf_memory_target_t *)malloc(
         sizeof(struct umf_memory_target_t));

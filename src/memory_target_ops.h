@@ -30,11 +30,11 @@ struct umf_memory_target_ops_t {
     void (*finalize)(void *mem_target);
 
     enum umf_result_t (*pool_create_from_memspace)(
-        umf_memspace_handle_t memspace, void **mem_targets,
+        umf_memspace_handle_t memspace, void **mem_targets, size_t num_targets,
         umf_memspace_policy_handle_t policy, umf_memory_pool_handle_t *pool);
 
     enum umf_result_t (*memory_provider_create_from_memspace)(
-        umf_memspace_handle_t memspace, void **mem_targets,
+        umf_memspace_handle_t memspace, void **mem_targets, size_t num_targets,
         umf_memspace_policy_handle_t policy,
         umf_memory_provider_handle_t *provider);
 
