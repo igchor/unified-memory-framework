@@ -141,6 +141,20 @@ enum umf_result_t
 umfPoolGetMemoryProvider(umf_memory_pool_handle_t hPool,
                          umf_memory_provider_handle_t *hProvider);
 
+///
+/// \brief Creates a new memory pool that owns the provided memory provider. Upon the
+///        destruction of the memory pool, the associated memory provider will also be destroyed.
+/// \param ops instance of umf_memory_pool_ops_t
+/// \param provider memory provider that will be used for coarse-grain allocations.
+/// \param params pointer to pool-specific parameters
+/// \param hPool [out] handle to the newly created memory pool
+/// \return UMF_RESULT_SUCCESS on success or appropriate error code on failure.
+///
+enum umf_result_t umfPoolCreateOwning(const struct umf_memory_pool_ops_t *ops,
+                                      umf_memory_provider_handle_t provider,
+                                      void *params,
+                                      umf_memory_pool_handle_t *hPool);
+
 #ifdef __cplusplus
 }
 #endif

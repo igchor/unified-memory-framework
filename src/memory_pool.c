@@ -15,6 +15,22 @@
 #include <assert.h>
 #include <stdlib.h>
 
+enum umf_result_t umfPoolCreateOwning(const struct umf_memory_pool_ops_t *ops,
+                                      umf_memory_provider_handle_t provider,
+                                      void *params,
+                                      umf_memory_pool_handle_t *hPool) {
+    umf_memory_pool_handle_t pool = NULL;
+    enum umf_result_t ret = umfPoolCreate(ops, provider, params, &pool);
+    if (ret) {
+        return ret;
+    }
+
+    pool->own_provider = true;
+    *hPool = pool;
+
+    return UMF_RESULT_SUCCESS;
+}
+
 void *umfPoolMalloc(umf_memory_pool_handle_t hPool, size_t size) {
     return hPool->ops.malloc(hPool->pool_priv, size);
 }

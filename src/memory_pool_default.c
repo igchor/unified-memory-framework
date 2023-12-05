@@ -44,6 +44,12 @@ enum umf_result_t umfPoolCreate(const struct umf_memory_pool_ops_t *ops,
 
 void umfPoolDestroy(umf_memory_pool_handle_t hPool) {
     hPool->ops.finalize(hPool->pool_priv);
+    if (hPool->own_provider) {
+        // Destroy associated memory provider.
+        umf_memory_provider_handle_t hProvider = NULL;
+        umfPoolGetMemoryProvider(hPool, &hProvider);
+        umfMemoryProviderDestroy(hProvider);
+    }
     free(hPool);
 }
 
