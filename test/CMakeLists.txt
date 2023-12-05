@@ -70,6 +70,9 @@ if(UMF_BUILD_LIBUMF_POOL_DISJOINT)
     add_umf_test(NAME c_api_disjoint_pool
                  SRCS c_api/disjoint_pool.c
                  LIBS disjoint_pool)
+    add_umf_test(NAME resource
+                 SRCS resource.cpp
+                 LIBS disjoint_pool)
 endif()
 
 if(UMF_BUILD_LIBUMF_POOL_JEMALLOC)
