@@ -57,4 +57,5 @@ add_umf_test(disjointPool disjoint_pool.cpp)
 
 if(LINUX) # OS-specific functions are implemented only for Linux now
     add_umf_test(provider_os_memory provider_os_memory.cpp)
+    add_umf_test(memspace_numa memspace_numa.cpp)
 endif()
