@@ -50,6 +50,12 @@ umfMemoryProviderCreateFromMemspace(umf_memspace_handle_t hMemspace,
                                     umf_memspace_policy_handle_t hPolicy,
                                     umf_memory_provider_handle_t *hProvider);
 
+///
+/// \brief Creates new memory provider from memspace and policy.
+/// \param hMemspace handle to memspace
+///
+void umfMemspaceDestroy(umf_memspace_handle_t hMemspace);
+
 // TODO: iteration, filtering, sorting API
 // can we just define memspace as an array of targets?
 

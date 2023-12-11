@@ -11,6 +11,7 @@ set(UMF_SOURCES
     memory_target.c
     memory_targets/memory_target_numa.c
     memspace.c
+    memspaces/memspace_numa.c
     pool/pool_disjoint.cpp
     provider/provider_os_memory.c
     provider/provider_tracking.c

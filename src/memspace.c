@@ -14,14 +14,7 @@
 
 #include "memory_target.h"
 #include "memory_target_ops.h"
-
-struct umf_memspace_t {
-    size_t size;
-
-    // TODO: consider flexible array member (if we don't want to expose the
-    // struct definition in the headers)
-    umf_memory_target_handle_t *nodes;
-};
+#include "memspace_internal.h"
 
 #ifndef NDEBUG
 static enum umf_result_t verifyMemTargetsTypes(umf_memspace_handle_t memspace) {
@@ -29,7 +22,7 @@ static enum umf_result_t verifyMemTargetsTypes(umf_memspace_handle_t memspace) {
         return UMF_RESULT_ERROR_INVALID_ARGUMENT;
     }
 
-    struct umf_memory_target_ops_t *ops = memspace->nodes[0]->ops;
+    const struct umf_memory_target_ops_t *ops = memspace->nodes[0]->ops;
     for (size_t i = 1; i < memspace->size; i++) {
         if (memspace->nodes[i]->ops != ops) {
             return UMF_RESULT_ERROR_INVALID_ARGUMENT;
@@ -91,4 +84,12 @@ umfMemoryProviderCreateFromMemspace(umf_memspace_handle_t memspace,
     free(privs);
 
     return ret;
+}
+
+void umfMemspaceDestroy(umf_memspace_handle_t memspace) {
+    for (size_t i = 0; i < memspace->size; i++) {
+        umfMemoryTargetDestroy(memspace->nodes[i]);
+    }
+    free(memspace->nodes);
+    free(memspace);
 }
