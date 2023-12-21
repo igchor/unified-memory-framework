@@ -17,6 +17,12 @@
 extern "C" {
 #endif
 
+#ifdef _WIN32
+#define UMF_EXPORT __declspec(dllexport)
+#else
+#define UMF_EXPORT
+#endif
+
 /// @brief Generates generic 'UMF' API versions
 #define UMF_MAKE_VERSION(_major, _minor)                                       \
     ((_major << 16) | (_minor & 0x0000ffff))
