@@ -2,7 +2,7 @@
 // Under the Apache License v2.0 with LLVM Exceptions. See LICENSE.TXT.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-#include "memoryPool.hpp"
+#include "poolFixtures.hpp"
 #include "pool.hpp"
 #include "pool_disjoint.h"
 #include "provider.hpp"
