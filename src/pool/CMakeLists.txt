@@ -23,7 +23,12 @@ if(UMF_BUILD_LIBUMF_POOL_DISJOINT)
 
     install(TARGETS disjoint_pool
         EXPORT ${PROJECT_NAME}-targets
+        LIBRARY DESTINATION lib
+        PUBLIC_HEADER DESTINATION include
     )
+
+    set_target_properties(disjoint_pool PROPERTIES
+	    PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/include/umf/pools/pool_disjoint.h")
 endif()
 
 # libumf_pool_jemalloc
@@ -36,7 +41,11 @@ if(UMF_BUILD_LIBUMF_POOL_JEMALLOC)
         add_library(${PROJECT_NAME}::jemalloc_pool ALIAS jemalloc_pool)
         install(TARGETS jemalloc_pool
             EXPORT ${PROJECT_NAME}-targets
+            LIBRARY DESTINATION lib
+            PUBLIC_HEADER DESTINATION include
         )
+        set_target_properties(jemalloc_pool PROPERTIES
+	        PUBLIC_HEADER "${PROJECT_SOURCE_DIR}/include/umf/pools/pool_jemalloc.h")
     else()
         message(FATAL_ERROR "libumf_pool_jemalloc is supported on Linux only")
     endif()
