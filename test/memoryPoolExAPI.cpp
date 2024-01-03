@@ -2,16 +2,23 @@
 // Under the Apache License v2.0 with LLVM Exceptions. See LICENSE.TXT.
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 
-#include "memory_pool_internal.h"
 #include "base.hpp"
 #include "common/provider_null.h"
+#include "memory_pool_internal.h"
 #include "pool.hpp"
 #include "provider_trace.h"
 #include "test_helpers.h"
 
 #include <unordered_map>
 
-using umf_test::test;
+struct umfPoolExTest : umf_test::test,
+                       ::testing::WithParamInterface<umf_pool_create_flags_t> {
+    void SetUp() override {
+        test::SetUp();
+        flags = this->GetParam();
+    }
+    umf_pool_create_flags_t flags;
+};
 
 template <typename T> umf_memory_pool_ops_t poolNoParamsMakeCOps() {
     umf_memory_pool_ops_t ops = umf::detail::poolOpsBase<T>();
@@ -35,48 +42,69 @@ template <typename T> umf_memory_pool_ops_t poolNoParamsMakeCOps() {
 umf_memory_pool_ops_t PROXY_POOL_OPS =
     poolNoParamsMakeCOps<umf_test::proxy_pool>();
 
-TEST_F(test, poolCreateExSuccess) {
+TEST_P(umfPoolExTest, poolCreateExSuccess) {
+    umf_memory_provider_handle_t provider = nullptr;
+    umf_result_t ret =
+        umfMemoryProviderCreate(&UMF_NULL_PROVIDER_OPS, nullptr, &provider);
+    ASSERT_EQ(ret, UMF_RESULT_SUCCESS);
+    ASSERT_NE(provider, nullptr);
+
     umf_memory_pool_handle_t pool = nullptr;
-    auto ret = umfPoolCreateEx(&PROXY_POOL_OPS, nullptr, &UMF_NULL_PROVIDER_OPS,
-                               nullptr, &pool);
+    ret = umfPoolCreateEx(&PROXY_POOL_OPS, provider, nullptr, flags, &pool);
     ASSERT_EQ(ret, UMF_RESULT_SUCCESS);
     ASSERT_NE(pool, nullptr);
 
     umfPoolDestroy(pool);
+
+    if (flags & UMF_POOL_CREATE_FLAG_OWN_PROVIDER) {
+        umfMemoryProviderDestroy(provider);
+    }
 }
 
-TEST_F(test, poolCreateExNullPoolOps) {
+TEST_P(umfPoolExTest, poolCreateExNullOps) {
+    umf_memory_provider_handle_t provider = nullptr;
+    umf_result_t ret =
+        umfMemoryProviderCreate(&UMF_NULL_PROVIDER_OPS, nullptr, &provider);
+    ASSERT_EQ(ret, UMF_RESULT_SUCCESS);
+    ASSERT_NE(provider, nullptr);
+
     umf_memory_pool_handle_t pool = nullptr;
-    auto ret = umfPoolCreateEx(nullptr, nullptr, &UMF_NULL_PROVIDER_OPS,
-                               nullptr, &pool);
+    ret = umfPoolCreateEx(nullptr, provider, nullptr, flags, &pool);
     ASSERT_EQ(ret, UMF_RESULT_ERROR_INVALID_ARGUMENT);
+
+    umfMemoryProviderDestroy(provider);
 }
 
-TEST_F(test, poolCreateExNullProviderOps) {
-    umf_memory_pool_handle_t pool = nullptr;
-    auto ret =
-        umfPoolCreateEx(&PROXY_POOL_OPS, nullptr, nullptr, nullptr, &pool);
+TEST_P(umfPoolExTest, poolCreateExNullPoolHandle) {
+    umf_memory_provider_handle_t provider = nullptr;
+    umf_result_t ret =
+        umfMemoryProviderCreate(&UMF_NULL_PROVIDER_OPS, nullptr, &provider);
+    ASSERT_EQ(ret, UMF_RESULT_SUCCESS);
+    ASSERT_NE(provider, nullptr);
+
+    ret = umfPoolCreateEx(&PROXY_POOL_OPS, provider, nullptr, flags, nullptr);
     ASSERT_EQ(ret, UMF_RESULT_ERROR_INVALID_ARGUMENT);
+
+    umfMemoryProviderDestroy(provider);
 }
 
-TEST_F(test, poolCreateExNullPoolHandle) {
-    auto ret = umfPoolCreateEx(&PROXY_POOL_OPS, nullptr, &UMF_NULL_PROVIDER_OPS,
-                               nullptr, nullptr);
-    ASSERT_EQ(ret, UMF_RESULT_ERROR_INVALID_ARGUMENT);
-}
-
-TEST_F(test, poolCreateExCountProviderCalls) {
+TEST_P(umfPoolExTest, poolCreateExCountProviderCalls) {
     auto nullProvider = umf_test::wrapProviderUnique(nullProviderCreate());
 
     static std::unordered_map<std::string, size_t> providerCalls;
+    providerCalls.clear();
     auto traceCb = [](const char *name) { providerCalls[name]++; };
 
     umf_provider_trace_params_t provider_params = {nullProvider.get(), traceCb};
 
+    umf_memory_provider_handle_t provider = nullptr;
+    umf_result_t ret = umfMemoryProviderCreate(&UMF_TRACE_PROVIDER_OPS,
+                                               &provider_params, &provider);
+    ASSERT_EQ(ret, UMF_RESULT_SUCCESS);
+    ASSERT_NE(provider, nullptr);
+
     umf_memory_pool_handle_t pool = nullptr;
-    umf_result_t ret =
-        umfPoolCreateEx(&PROXY_POOL_OPS, nullptr, &UMF_TRACE_PROVIDER_OPS,
-                        &provider_params, &pool);
+    ret = umfPoolCreateEx(&PROXY_POOL_OPS, provider, nullptr, flags, &pool);
     ASSERT_EQ(ret, UMF_RESULT_SUCCESS);
     ASSERT_NE(pool, nullptr);
 
@@ -99,4 +127,12 @@ TEST_F(test, poolCreateExCountProviderCalls) {
     ASSERT_EQ(providerCalls.size(), provider_call_count);
 
     umfPoolDestroy(pool);
+
+    if (flags & UMF_POOL_CREATE_FLAG_OWN_PROVIDER) {
+        umfMemoryProviderDestroy(provider);
+    }
 }
+
+INSTANTIATE_TEST_SUITE_P(umfPoolEx, umfPoolExTest,
+                         ::testing::Values(0,
+                                           UMF_POOL_CREATE_FLAG_OWN_PROVIDER));
