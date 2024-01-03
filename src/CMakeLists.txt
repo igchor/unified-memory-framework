@@ -8,16 +8,22 @@ set(UMF_SOURCES
     memory_pool.c
     memory_provider.c
     memory_provider_get_last_failed.c
-    provider/provider_os_memory.c
     provider/provider_tracking.c
     critnib/critnib.c
 )
 
+if(UMF_BUILD_OS_PROVIDER)
+    set(UMF_SOURCES ${UMF_SOURCES} provider/provider_os_memory.c)
+endif()
+
 set(UMF_SOURCES_LINUX
-    provider/provider_os_memory_linux.c
     utils/utils_posix_concurrency.c
     utils/utils_posix_math.c
 )
+
+if(UMF_BUILD_OS_PROVIDER)
+    set(UMF_SOURCES_LINUX ${UMF_SOURCES_LINUX} provider/provider_os_memory_linux.c)
+endif()
 
 set(UMF_SOURCES_WINDOWS
     provider/provider_tracking_windows.cpp
@@ -30,7 +36,7 @@ set(UMF_SOURCES_MACOSX
     utils/utils_posix_math.c
 )
 
-if(LINUX)
+if(LINUX AND UMF_BUILD_OS_PROVIDER)
     set(UMF_LIBS numa)
 else()
     set(UMF_LIBS)

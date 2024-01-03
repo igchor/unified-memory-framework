@@ -24,6 +24,7 @@ option(UMF_BUILD_BENCHMARKS "Build UMF benchmarks" OFF)
 option(UMF_ENABLE_POOL_TRACKING "Build UMF with pool tracking" ON)
 option(UMF_DEVELOPER_MODE "Enable developer checks, treats warnings as errors" OFF)
 option(UMF_FORMAT_CODE_STYLE "Format UMF code with clang-format" OFF)
+option(UMF_BUILD_OS_PROVIDER "Build OS memory provider" ON)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     set(LINUX TRUE)
