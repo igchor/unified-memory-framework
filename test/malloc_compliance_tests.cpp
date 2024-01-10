@@ -15,6 +15,8 @@
 #include "test_helpers.h"
 #include "umf/memory_pool.h"
 
+#include <iostream>
+
 #include "base.hpp"
 using umf_test::test;
 
@@ -116,6 +118,7 @@ void realloc_compliance_test(umf_memory_pool_handle_t hPool) {
     for (int i = 0; i < ITERATIONS; i++) {
         // Generate allocation size
         alloc_size = rand_alloc_size(MAX_ALLOC_SIZE);
+        std::cout << alloc_size << std::endl;
         void *malloc_obj = umfPoolMalloc(hPool, alloc_size);
         ASSERT_NE(malloc_obj, nullptr)
             << "malloc returned NULL, couldn't allocate much memory";
