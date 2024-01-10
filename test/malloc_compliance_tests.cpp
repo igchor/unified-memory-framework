@@ -33,7 +33,6 @@ using umf_test::test;
 //------------------------------------------------------------------------
 
 static inline size_t rand_alloc_size(int max) {
-    srand(SRAND_INIT_VALUE);
     return rand() % max;
 }
 
@@ -50,6 +49,7 @@ static inline void free_memory(umf_memory_pool_handle_t hPool,
 
 // ISO/IEC 9899:TC3 7.20.3.3
 void malloc_compliance_test(umf_memory_pool_handle_t hPool) {
+    srand(SRAND_INIT_VALUE);
     void *alloc_ptr[ITERATIONS];
     size_t alloc_ptr_size[ITERATIONS];
 
@@ -80,6 +80,7 @@ void malloc_compliance_test(umf_memory_pool_handle_t hPool) {
 
 // ISO/IEC 9899:TC3 7.20.3.1
 void calloc_compliance_test(umf_memory_pool_handle_t hPool) {
+    srand(SRAND_INIT_VALUE);
     void *alloc_ptr[ITERATIONS];
     size_t alloc_size;
 
@@ -98,6 +99,7 @@ void calloc_compliance_test(umf_memory_pool_handle_t hPool) {
 
 // ISO/IEC 9899:TC3 7.20.3.4
 void realloc_compliance_test(umf_memory_pool_handle_t hPool) {
+    srand(SRAND_INIT_VALUE);
     // If ptr is a null pointer, the realloc function behaves
     // like the malloc function for the specified size
     void *ret = umfPoolRealloc(hPool, NULL, 10);
