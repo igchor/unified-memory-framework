@@ -78,6 +78,10 @@ jobs:
       - name: Build UMF
         run: |
           cmake --build ${{env.BUILD_DIR}} -j $(nproc)
+
+      - name: test jemalloc
+        run: |
+          for i in {1..100}; do if test -f ${{env.BUILD_DIR}}/test/umf_test-jemalloc_pool; then ${{env.BUILD_DIR}}/test/umf_test-jemalloc_pool --gtest_filter=*realloc* ; fi; done
           
       - name: Run tests
         working-directory: ${{env.BUILD_DIR}}
