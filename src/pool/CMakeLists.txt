@@ -33,7 +33,7 @@ if(UMF_BUILD_LIBUMF_POOL_JEMALLOC)
         add_umf_library(NAME jemalloc_pool
                         TYPE STATIC
                         SRCS pool_jemalloc.c
-                        LIBS jemalloc umf_utils)
+                        LIBS c jemalloc umf_utils) # TODO: link directly with libc to force using malloc from glibc
         add_library(${PROJECT_NAME}::jemalloc_pool ALIAS jemalloc_pool)
         install(TARGETS jemalloc_pool
             EXPORT ${PROJECT_NAME}-targets

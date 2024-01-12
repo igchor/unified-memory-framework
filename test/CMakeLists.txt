@@ -82,7 +82,7 @@ if(UMF_BUILD_OS_MEMORY_PROVIDER)
     if(UMF_BUILD_LIBUMF_POOL_JEMALLOC)
         add_umf_test(NAME jemalloc_pool
                     SRCS pools/jemalloc_pool.cpp malloc_compliance_tests.cpp
-                    LIBS jemalloc_pool)
+                    LIBS c jemalloc_pool) # TODO: link directly with libc to force using malloc from glibc
     endif()
 else()
     message(STATUS "The jemalloc_pool test is DISABLED, because it uses OS_MEMORY_PROVIDER, while the UMF_BUILD_OS_MEMORY_PROVIDER option is set to OFF")
