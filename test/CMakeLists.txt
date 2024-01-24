@@ -112,5 +112,4 @@ if(UMF_BUILD_OS_MEMORY_PROVIDER AND LINUX) # OS-specific functions are implement
 endif()
 
 add_umf_test(NAME base_alloc
-            SRCS test_base_alloc.cpp
-            LIBS umf_utils)
+            SRCS ${BA_SOURCES} test_base_alloc.cpp)
