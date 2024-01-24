@@ -111,10 +111,6 @@ if(UMF_BUILD_OS_MEMORY_PROVIDER AND LINUX) # OS-specific functions are implement
                  LIBS umf_utils numa)
 endif()
 
-# TODO: add Windows tests
-if(LINUX)
-    # the base_alloc test uses linux pthreads
-    add_umf_test(NAME base_alloc
-                SRCS test_base_alloc.c
-                LIBS umf_utils)
-endif()
+add_umf_test(NAME base_alloc
+            SRCS test_base_alloc.cpp
+            LIBS umf_utils)
