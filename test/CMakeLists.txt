@@ -110,5 +110,7 @@ if(UMF_BUILD_OS_MEMORY_PROVIDER AND LINUX) # OS-specific functions are implement
                  LIBS umf_utils numa)
 endif()
 
-add_executable(mmap test_mmap.c)
-target_link_libraries(mmap numa)
+if (LINUX)
+    add_executable(mmap test_mmap.c)
+    target_link_libraries(mmap numa)
+endif()
