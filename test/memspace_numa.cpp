@@ -11,6 +11,8 @@
 
 #include <numa.h>
 
+#include <iostream>
+
 #define SIZE_4K (4096)
 
 struct numa_nodes_test : ::umf_test::test {
@@ -22,11 +24,13 @@ struct numa_nodes_test : ::umf_test::test {
         }
 
         int numNodes = numa_max_node();
+        std::cout << "Num nodes: " << numNodes << std::endl;
         if (numNodes < 0) {
             GTEST_SKIP() << "No available numa nodes";
         }
 
         for (int i = 0; i <= numNodes; i++) {
+            std::cout << "NODE: " << i << std::endl;
             nodeIds.emplace_back(i);
         }
     }
