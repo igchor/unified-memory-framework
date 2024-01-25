@@ -427,6 +427,11 @@ static umf_result_t os_alloc(void *provider, size_t size, size_t alignment,
                                      os_provider->numa_flags);
     } else {
         fprintf(stderr, "hwloc_bitmap_ NOT ZERO\n");
+        char *str = NULL;
+        hwloc_bitmap_list_asprintf(&str, os_provider->nodeset);
+        fprintf(stderr, "%p %zu List: {%s} %d %d\n", addr, size, str,
+                os_provider->numa_policy, os_provider->numa_flags);
+        free(str);
         ret = hwloc_set_area_membind(
             os_provider->topo, addr, size, os_provider->nodeset,
             os_provider->numa_policy, os_provider->numa_flags);
