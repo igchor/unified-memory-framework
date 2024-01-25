@@ -415,6 +415,8 @@ static umf_result_t os_alloc(void *provider, size_t size, size_t alignment,
 
     errno = 0;
     if (hwloc_bitmap_iszero(os_provider->nodeset)) {
+        fprintf(stderr, "hwloc_bitmap_iszero\n");
+
         // Hwloc_set_area_membind fails if empty nodeset is passed so if no node is specified,
         // just pass all available nodes. For modes where no node is needed, they will be
         // ignored anyway.
@@ -424,9 +426,11 @@ static umf_result_t os_alloc(void *provider, size_t size, size_t alignment,
                                      complete_nodeset, os_provider->numa_policy,
                                      os_provider->numa_flags);
     } else {
+        fprintf(stderr, "hwloc_bitmap_ NOT ZERO\n");
         ret = hwloc_set_area_membind(
             os_provider->topo, addr, size, os_provider->nodeset,
             os_provider->numa_policy, os_provider->numa_flags);
+        fprintf(stderr, "ERROR: %d %d\n", ret, errno);
     }
 
     if (ret) {
