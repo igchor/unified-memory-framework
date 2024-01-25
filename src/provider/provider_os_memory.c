@@ -110,6 +110,9 @@ static umf_result_t nodemask_to_hwloc_nodeset(const unsigned long *nodemask,
     }
 
     unsigned bits_per_mask = sizeof(unsigned long) * 8;
+    fprintf(stderr, "maxnode: %zu nrulongs: %zu\n", maxnode,
+            (maxnode + bits_per_mask - 1) / bits_per_mask);
+    fprintf(stderr, "nodemask: %zu\n", *nodemask);
     hwloc_bitmap_from_ulongs(
         *out_nodeset, (maxnode + bits_per_mask - 1) / bits_per_mask, nodemask);
 
