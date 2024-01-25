@@ -77,6 +77,14 @@ numa_targets_create_nodemask(struct numa_memory_target_t **targets,
         }
     }
 
+    int lastBit = hwloc_bitmap_last(bitmap);
+    if (lastBit == -1) {
+        // no node is set
+        return UMF_RESULT_ERROR_INVALID_ARGUMENT;
+    }
+
+    *maxnode = lastBit + 1;
+
     int nrUlongs = hwloc_bitmap_nr_ulongs(bitmap);
     if (nrUlongs == -1) {
         hwloc_bitmap_free(bitmap);
@@ -93,7 +101,6 @@ numa_targets_create_nodemask(struct numa_memory_target_t **targets,
     }
 
     *mask = nodemask;
-    *maxnode = nrUlongs * sizeof(unsigned long) * 8;
 
     return UMF_RESULT_SUCCESS;
 }
