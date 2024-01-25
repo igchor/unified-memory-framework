@@ -112,6 +112,11 @@ jobs:
         run: |
           cmake --build ${{env.BUILD_DIR}} -j $(nproc)
 
+      - name: Run mmap
+        working-directory: ${{env.BUILD_DIR}}
+        run: |
+          ./test/mmap
+
       - name: Run tests
         working-directory: ${{env.BUILD_DIR}}
         run: |
