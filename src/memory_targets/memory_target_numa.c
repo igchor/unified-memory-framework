@@ -103,7 +103,7 @@ numa_targets_create_nodemask(struct numa_memory_target_t **targets,
     int ret = hwloc_bitmap_to_ulongs(bitmap, nrUlongs, nodemask);
     hwloc_bitmap_free(bitmap);
 
-    fprintf(stderr, "NUMA: nodemask %zu\n", *nodemask);
+    fprintf(stderr, "NUMA: nrulongs: %d nodemask %zu\n", nrUlongs, *nodemask);
 
     if (ret) {
         free(nodemask);
