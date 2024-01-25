@@ -70,11 +70,13 @@ numa_targets_create_nodemask(struct numa_memory_target_t **targets,
         return UMF_RESULT_ERROR_OUT_OF_HOST_MEMORY;
     }
 
+    fprintf(stderr, "NUMA NODE number: %zu\n", numTargets);
     for (size_t i = 0; i < numTargets; i++) {
         if (hwloc_bitmap_set(bitmap, targets[i]->id)) {
             hwloc_bitmap_free(bitmap);
             return UMF_RESULT_ERROR_OUT_OF_HOST_MEMORY;
         }
+        fprintf(stderr, "NUMA NODE id set: %zu\n", targets[i]->id);
     }
 
     int lastBit = hwloc_bitmap_last(bitmap);
@@ -92,9 +94,16 @@ numa_targets_create_nodemask(struct numa_memory_target_t **targets,
         return UMF_RESULT_ERROR_UNKNOWN;
     }
 
+    char *str = NULL;
+    hwloc_bitmap_list_asprintf(&str, bitmap);
+    fprintf(stderr, "NUMA list{%s}\n", str);
+    free(str);
+
     unsigned long *nodemask = malloc(sizeof(unsigned long) * nrUlongs);
     int ret = hwloc_bitmap_to_ulongs(bitmap, nrUlongs, nodemask);
     hwloc_bitmap_free(bitmap);
+
+    fprintf(stderr, "NUMA: nodemask %zu\n", *nodemask);
 
     if (ret) {
         free(nodemask);
