@@ -103,7 +103,7 @@ numa_targets_create_nodemask(struct numa_memory_target_t **targets,
 
     *mask = nodemask;
 
-    fprintf(stderr, "maxnode: %d\n", maxnode);
+    fprintf(stderr, "maxnode: %d\n", *maxnode);
 
     return UMF_RESULT_SUCCESS;
 }
