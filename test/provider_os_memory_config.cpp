@@ -165,6 +165,9 @@ TEST_P(providerConfigTestNumaMode, numa_modes) {
         allowed_nodes = numa_get_mems_allowed();
         params.nodemask = allowed_nodes->maskp;
         params.maxnode = allowed_nodes->size;
+        std::cout << "ALLOWED: "
+                  << " " << *params.nodemask << " " << params.maxnode
+                  << std::endl;
     }
 
     create_provider(&params);
@@ -187,6 +190,7 @@ TEST_P(providerConfigTestNumaMode, numa_modes) {
             ASSERT_EQ(actual_mode, MPOL_PREFERRED);
         }
     } else if (params.numa_mode == UMF_NUMA_MODE_LOCAL) {
+        ASSERT_EQ(0, 1);
         // MPOL_PREFERRED_* is equivalent to MPOL_LOCAL if no node is set
         if (actual_mode == MPOL_PREFERRED ||
             actual_mode == MPOL_PREFERRED_MANY) {
