@@ -18,6 +18,7 @@ set(UMF_SOURCES
     memspace.c
     provider/provider_tracking.c
     critnib/critnib.c
+    pool/pool_proxy.c
 )
 
 set(UMF_SOURCES_LINUX
