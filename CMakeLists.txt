@@ -80,7 +80,9 @@ endif()
 # dependencies.
 add_library(umf_headers INTERFACE)
 
-add_link_options(/VERBOSE)
+if(WINDOWS)
+    add_link_options(/VERBOSE)
+#endif()
 
 # Alias target to support FetchContent.
 add_library(${PROJECT_NAME}::headers ALIAS umf_headers)
