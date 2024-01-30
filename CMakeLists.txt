@@ -80,6 +80,8 @@ endif()
 # dependencies.
 add_library(umf_headers INTERFACE)
 
+add_link_options(/VERBOSE)
+
 # Alias target to support FetchContent.
 add_library(${PROJECT_NAME}::headers ALIAS umf_headers)
 target_include_directories(umf_headers INTERFACE
