@@ -185,11 +185,15 @@ jobs:
           -DUMF_ENABLE_POOL_TRACKING=${{matrix.pool_tracking}}
           -DUMF_FORMAT_CODE_STYLE=OFF
           -DUMF_DEVELOPER_MODE=ON
+          -DUMF_BUILD_TESTS=0
           -DUMF_BUILD_LIBUMF_POOL_DISJOINT=ON
           -DUSE_ASAN=${{matrix.sanitizers.asan}}
 
       - name: Build UMF
         run: cmake --build ${{env.BUILD_DIR}} --config ${{matrix.build_type}} -j $Env:NUMBER_OF_PROCESSORS
+
+      - name: dump symbols
+        run: dumpbin /exports D:\a\unified-memory-framework\unified-memory-framework\build\bin\${{matrix.build_type}}\umf.dll
 
       - name: Test
         working-directory: ${{env.BUILD_DIR}}
