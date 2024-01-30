@@ -193,7 +193,7 @@ jobs:
         run: cmake --build ${{env.BUILD_DIR}} --config ${{matrix.build_type}} -j $Env:NUMBER_OF_PROCESSORS
 
       - name: dump symbols
-        run: dumpbin /exports D:\a\unified-memory-framework\unified-memory-framework\build\bin\${{matrix.build_type}}\umf.dll
+        run: dumpbin /exports D:\a\unified-memory-framework\unified-memory-framework\build\bin\${{matrix.build_type}}\umf.*
 
       - name: Test
         working-directory: ${{env.BUILD_DIR}}
