@@ -17,7 +17,7 @@ extern "C" {
 #include <umf/memory_pool.h>
 #include <umf/memory_provider.h>
 
-UMF_EXPORT extern umf_memory_pool_ops_t UMF_PROXY_POOL_OPS;
+extern UMF_EXPORT umf_memory_pool_ops_t UMF_PROXY_POOL_OPS;
 
 #ifdef __cplusplus
 }
