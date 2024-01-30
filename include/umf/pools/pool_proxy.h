@@ -10,12 +10,13 @@
 #ifndef UMF_PROXY_MEMORY_POOL_H
 #define UMF_PROXY_MEMORY_POOL_H 1
 
+#include <umf/memory_pool.h>
+#include <umf/memory_pool_ops.h>
+#include <umf/memory_provider.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <umf/memory_pool.h>
-#include <umf/memory_provider.h>
 
 extern UMF_EXPORT umf_memory_pool_ops_t UMF_PROXY_POOL_OPS;
 
