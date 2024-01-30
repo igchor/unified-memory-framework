@@ -60,7 +60,7 @@ typedef struct umf_disjoint_pool_params_t {
     const char *Name;
 } umf_disjoint_pool_params_t;
 
-UMF_EXPORT extern umf_memory_pool_ops_t UMF_DISJOINT_POOL_OPS;
+UMF_EXPORT umf_memory_pool_ops_t UMF_DISJOINT_POOL_OPS;
 
 /// @brief Create default params struct for disjoint pool
 static inline umf_disjoint_pool_params_t umfDisjointPoolParamsDefault(void) {

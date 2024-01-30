@@ -87,7 +87,7 @@ typedef enum umf_os_memory_provider_native_error {
     UMF_OS_RESULT_ERROR_PURGE_FORCE_FAILED,
 } umf_os_memory_provider_native_error_t;
 
-UMF_EXPORT extern umf_memory_provider_ops_t UMF_OS_MEMORY_PROVIDER_OPS;
+UMF_EXPORT umf_memory_provider_ops_t UMF_OS_MEMORY_PROVIDER_OPS;
 
 /// @brief Create default params for os memory provider
 static inline umf_os_memory_provider_params_t

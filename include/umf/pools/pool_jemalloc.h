@@ -16,7 +16,7 @@ extern "C" {
 
 #include <umf/memory_pool_ops.h>
 
-UMF_EXPORT extern umf_memory_pool_ops_t UMF_JEMALLOC_POOL_OPS;
+UMF_EXPORT umf_memory_pool_ops_t UMF_JEMALLOC_POOL_OPS;
 
 #ifdef __cplusplus
 }
