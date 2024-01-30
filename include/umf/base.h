@@ -19,6 +19,8 @@ extern "C" {
 
 #if defined(_WIN32) && defined(UMF_SHARED_LIBRARY)
 #define UMF_EXPORT __declspec(dllexport)
+#elif __GNUC__ >= 4
+#define UMF_EXPORT __attribute__((visibility("default")))
 #else
 #define UMF_EXPORT
 #endif
