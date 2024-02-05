@@ -33,36 +33,25 @@ using provider_unique_handle_t =
 
 #define UMF_ASSIGN_OP(ops, type, func, default_return)                         \
     ops.func = [](void *obj, auto... args) {                                   \
-        try {                                                                  \
-            return reinterpret_cast<type *>(obj)->func(args...);               \
-        } catch (...) {                                                        \
-            return default_return;                                             \
-        }                                                                      \
+        return reinterpret_cast<type *>(obj)->func(args...);                   \
     }
 
 #define UMF_ASSIGN_OP_NORETURN(ops, type, func)                                \
     ops.func = [](void *obj, auto... args) {                                   \
-        try {                                                                  \
-            return reinterpret_cast<type *>(obj)->func(args...);               \
-        } catch (...) {                                                        \
-        }                                                                      \
+        return reinterpret_cast<type *>(obj)->func(args...);                   \
     }
 
 namespace detail {
 template <typename T, typename ArgsTuple>
 umf_result_t initialize(T *obj, ArgsTuple &&args) {
-    try {
-        auto ret = std::apply(&T::initialize,
-                              std::tuple_cat(std::make_tuple(obj),
-                                             std::forward<ArgsTuple>(args)));
-        if (ret != UMF_RESULT_SUCCESS) {
-            delete obj;
-        }
-        return ret;
-    } catch (...) {
+
+    auto ret = std::apply(
+        &T::initialize,
+        std::tuple_cat(std::make_tuple(obj), std::forward<ArgsTuple>(args)));
+    if (ret != UMF_RESULT_SUCCESS) {
         delete obj;
-        return UMF_RESULT_ERROR_UNKNOWN;
     }
+    return ret;
 }
 
 template <typename T> umf_memory_pool_ops_t poolOpsBase() {
@@ -103,11 +92,7 @@ template <typename T, typename ParamType> umf_memory_pool_ops_t poolMakeCOps() {
 
     ops.initialize = [](umf_memory_provider_handle_t provider, void *params,
                         void **obj) {
-        try {
-            *obj = new T;
-        } catch (...) {
-            return UMF_RESULT_ERROR_OUT_OF_HOST_MEMORY;
-        }
+        *obj = new T;
 
         if constexpr (std::is_same_v<ParamType, void>) {
             return detail::initialize<T>(reinterpret_cast<T *>(*obj),
@@ -131,11 +116,7 @@ umf_memory_provider_ops_t providerMakeCOps() {
     umf_memory_provider_ops_t ops = detail::providerOpsBase<T>();
 
     ops.initialize = [](void *params, void **obj) {
-        try {
-            *obj = new T;
-        } catch (...) {
-            return UMF_RESULT_ERROR_OUT_OF_HOST_MEMORY;
-        }
+        *obj = new T;
 
         if constexpr (std::is_same_v<ParamType, void>) {
             return detail::initialize<T>(reinterpret_cast<T *>(*obj),

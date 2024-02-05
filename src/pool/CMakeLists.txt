@@ -4,6 +4,9 @@
 
 # libumf_pool_disjoint
 if(UMF_BUILD_LIBUMF_POOL_DISJOINT)
+    set(SAVED_CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nodefaultlibs -fno-exceptions")
+
     add_umf_library(NAME disjoint_pool
                     TYPE STATIC
                     SRCS pool_disjoint.cpp
@@ -25,6 +28,8 @@ if(UMF_BUILD_LIBUMF_POOL_DISJOINT)
     install(TARGETS disjoint_pool
         EXPORT ${PROJECT_NAME}-targets
     )
+
+    set(CMAKE_CXX_FLAGS ${SAVED_CMAKE_CXX_FLAGS})
 endif()
 
 # libumf_pool_jemalloc

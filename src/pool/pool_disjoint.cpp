@@ -14,13 +14,13 @@
 #include <memory>
 #include <mutex>
 #include <shared_mutex>
-#include <string>
+
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
 // TODO: replace with logger?
-#include <iostream>
+// #include <iostream>
 
 #include "../cpp_helpers.hpp"
 #include "pool_disjoint.h"
@@ -284,7 +284,7 @@ class Bucket {
     void updateStats(int InUse, int InPool);
 
     // Print bucket statistics
-    void printStats(bool &TitlePrinted, const std::string &Label);
+    //void printStats(bool &TitlePrinted, const std::string &Label);
 
   private:
     void onFreeChunk(Slab &, bool &ToPool);
@@ -340,10 +340,10 @@ class DisjointPool::AllocImpl {
         MinBucketSizeExp = (size_t)log2Utils(Size1);
         auto Size2 = Size1 + Size1 / 2;
         for (; Size2 < CutOff; Size1 *= 2, Size2 *= 2) {
-            Buckets.push_back(std::make_unique<Bucket>(Size1, *this));
-            Buckets.push_back(std::make_unique<Bucket>(Size2, *this));
+            //Buckets.push_back(std::make_unique<Bucket>(Size1, *this));
+            //Buckets.push_back(std::make_unique<Bucket>(Size2, *this));
         }
-        Buckets.push_back(std::make_unique<Bucket>(CutOff, *this));
+        //Buckets.push_back(std::make_unique<Bucket>(CutOff, *this));
 
         auto ret = umfMemoryProviderGetMinPageSize(hProvider, nullptr,
                                                    &ProviderMinPageSize);
@@ -377,8 +377,8 @@ class DisjointPool::AllocImpl {
         }
     };
 
-    void printStats(bool &TitlePrinted, size_t &HighBucketSize,
-                    size_t &HighPeakSlabsInUse, const std::string &Label);
+    //void printStats(bool &TitlePrinted, size_t &HighBucketSize,
+     //               size_t &HighPeakSlabsInUse, const std::string &Label);
 
   private:
     Bucket &findBucket(size_t Size);
@@ -390,7 +390,7 @@ static void *memoryProviderAlloc(umf_memory_provider_handle_t hProvider,
     void *ptr;
     auto ret = umfMemoryProviderAlloc(hProvider, size, alignment, &ptr);
     if (ret != UMF_RESULT_SUCCESS) {
-        throw MemoryProviderError{ret};
+        //throw MemoryProviderError{ret};
     }
     return ptr;
 }
@@ -399,7 +399,7 @@ static void memoryProviderFree(umf_memory_provider_handle_t hProvider,
                                void *ptr) {
     auto ret = umfMemoryProviderFree(hProvider, ptr, 0);
     if (ret != UMF_RESULT_SUCCESS) {
-        throw MemoryProviderError{ret};
+        //throw MemoryProviderError{ret};
     }
 }
 
@@ -407,11 +407,11 @@ bool operator==(const Slab &Lhs, const Slab &Rhs) {
     return Lhs.getPtr() == Rhs.getPtr();
 }
 
-std::ostream &operator<<(std::ostream &Os, const Slab &Slab) {
-    Os << "Slab<" << Slab.getPtr() << ", " << Slab.getEnd() << ", "
-       << Slab.getBucket().getSize() << ">";
-    return Os;
-}
+// std::ostream &operator<<(std::ostream &Os, const Slab &Slab) {
+//     Os << "Slab<" << Slab.getPtr() << ", " << Slab.getEnd() << ", "
+//        << Slab.getBucket().getSize() << ">";
+//     return Os;
+// }
 
 Slab::Slab(Bucket &Bkt)
     : // In case bucket size is not a multiple of SlabMinSize, we would have
@@ -424,27 +424,10 @@ Slab::Slab(Bucket &Bkt)
 }
 
 Slab::~Slab() {
-    try {
-        unregSlab(*this);
-    } catch (std::exception &e) {
-        std::cerr << "DisjointPool: unexpected error: " << e.what() << "\n";
-    }
 
-    try {
-        memoryProviderFree(bucket.getMemHandle(), MemPtr);
-    } catch (MemoryProviderError &e) {
-        std::cerr << "DisjointPool: error from memory provider: " << e.code
-                  << "\n";
-        if (e.code == UMF_RESULT_ERROR_MEMORY_PROVIDER_SPECIFIC) {
-            const char *message = "";
-            int error = 0;
+    unregSlab(*this);
 
-            umfMemoryProviderGetLastNativeError(
-                umfGetLastFailedMemoryProvider(), &message, &error);
-            std::cerr << "Native error msg: " << message
-                      << ", native error code: " << error << std::endl;
-        }
-    }
+    memoryProviderFree(bucket.getMemHandle(), MemPtr);
 }
 
 // Return the index of the first available chunk, SIZE_MAX otherwise
@@ -488,15 +471,15 @@ void Slab::regSlabByAddr(void *Addr, Slab &Slab) {
     auto &Lock = Slab.getBucket().getAllocCtx().getKnownSlabsMapLock();
     auto &Map = Slab.getBucket().getAllocCtx().getKnownSlabs();
 
-    std::lock_guard<std::shared_timed_mutex> Lg(Lock);
-    Map.insert({Addr, Slab});
+    //std::lock_guard<std::shared_timed_mutex> Lg(Lock);
+    //Map.insert({Addr, Slab});
 }
 
 void Slab::unregSlabByAddr(void *Addr, Slab &Slab) {
     auto &Lock = Slab.getBucket().getAllocCtx().getKnownSlabsMapLock();
     auto &Map = Slab.getBucket().getAllocCtx().getKnownSlabs();
 
-    std::lock_guard<std::shared_timed_mutex> Lg(Lock);
+    //std::lock_guard<std::shared_timed_mutex> Lg(Lock);
 
     auto Slabs = Map.equal_range(Addr);
     // At least the must get the current slab from the map.
@@ -504,7 +487,7 @@ void Slab::unregSlabByAddr(void *Addr, Slab &Slab) {
 
     for (auto It = Slabs.first; It != Slabs.second; ++It) {
         if (It->second == Slab) {
-            Map.erase(It);
+           // Map.erase(It);
             return;
         }
     }
@@ -569,9 +552,9 @@ auto Bucket::getAvailFullSlab(bool &FromPool)
     -> decltype(AvailableSlabs.begin()) {
     // Return a slab that will be used for a single allocation.
     if (AvailableSlabs.size() == 0) {
-        auto It = AvailableSlabs.insert(AvailableSlabs.begin(),
-                                        std::make_unique<Slab>(*this));
-        (*It)->setIterator(It);
+        //auto It = AvailableSlabs.insert(AvailableSlabs.begin(),
+                                     //   std::make_unique<Slab>(*this));
+        //(*It)->setIterator(It);
         FromPool = false;
         updateStats(1, 0);
     } else {
@@ -582,37 +565,37 @@ auto Bucket::getAvailFullSlab(bool &FromPool)
 }
 
 void *Bucket::getSlab(bool &FromPool) {
-    std::lock_guard<std::mutex> Lg(BucketLock);
+    //std::lock_guard<std::mutex> Lg(BucketLock);
 
     auto SlabIt = getAvailFullSlab(FromPool);
     auto *FreeSlab = (*SlabIt)->getSlab();
-    auto It =
-        UnavailableSlabs.insert(UnavailableSlabs.begin(), std::move(*SlabIt));
-    AvailableSlabs.erase(SlabIt);
-    (*It)->setIterator(It);
+    //auto It =
+    //    UnavailableSlabs.insert(UnavailableSlabs.begin(), std::move(*SlabIt));
+    //AvailableSlabs.erase(SlabIt);
+    //(*It)->setIterator(It);
     return FreeSlab;
 }
 
 void Bucket::freeSlab(Slab &Slab, bool &ToPool) {
-    std::lock_guard<std::mutex> Lg(BucketLock);
+    //std::lock_guard<std::mutex> Lg(BucketLock);
     auto SlabIter = Slab.getIterator();
     assert(SlabIter != UnavailableSlabs.end());
     if (CanPool(ToPool)) {
-        auto It =
-            AvailableSlabs.insert(AvailableSlabs.begin(), std::move(*SlabIter));
-        UnavailableSlabs.erase(SlabIter);
-        (*It)->setIterator(It);
+        //auto It =
+        //    AvailableSlabs.insert(AvailableSlabs.begin(), std::move(*SlabIter));
+        //UnavailableSlabs.erase(SlabIter);
+        //(*It)->setIterator(It);
     } else {
-        UnavailableSlabs.erase(SlabIter);
+        //UnavailableSlabs.erase(SlabIter);
     }
 }
 
 auto Bucket::getAvailSlab(bool &FromPool) -> decltype(AvailableSlabs.begin()) {
 
     if (AvailableSlabs.size() == 0) {
-        auto It = AvailableSlabs.insert(AvailableSlabs.begin(),
-                                        std::make_unique<Slab>(*this));
-        (*It)->setIterator(It);
+        //auto It = AvailableSlabs.insert(AvailableSlabs.begin(),
+        //                                std::make_unique<Slab>(*this));
+        //(*It)->setIterator(It);
 
         updateStats(1, 0);
         FromPool = false;
@@ -632,24 +615,24 @@ auto Bucket::getAvailSlab(bool &FromPool) -> decltype(AvailableSlabs.begin()) {
 }
 
 void *Bucket::getChunk(bool &FromPool) {
-    std::lock_guard<std::mutex> Lg(BucketLock);
+    //std::lock_guard<std::mutex> Lg(BucketLock);
 
     auto SlabIt = getAvailSlab(FromPool);
     auto *FreeChunk = (*SlabIt)->getChunk();
 
     // If the slab is full, move it to unavailable slabs and update its iterator
     if (!((*SlabIt)->hasAvail())) {
-        auto It = UnavailableSlabs.insert(UnavailableSlabs.begin(),
-                                          std::move(*SlabIt));
-        AvailableSlabs.erase(SlabIt);
-        (*It)->setIterator(It);
+       // auto It = UnavailableSlabs.insert(UnavailableSlabs.begin(),
+       //                                   std::move(*SlabIt));
+       // AvailableSlabs.erase(SlabIt);
+       // (*It)->setIterator(It);
     }
 
     return FreeChunk;
 }
 
 void Bucket::freeChunk(void *Ptr, Slab &Slab, bool &ToPool) {
-    std::lock_guard<std::mutex> Lg(BucketLock);
+    //std::lock_guard<std::mutex> Lg(BucketLock);
 
     Slab.freeChunk(Ptr);
 
@@ -666,11 +649,11 @@ void Bucket::onFreeChunk(Slab &Slab, bool &ToPool) {
         auto SlabIter = Slab.getIterator();
         assert(SlabIter != UnavailableSlabs.end());
 
-        auto It =
-            AvailableSlabs.insert(AvailableSlabs.begin(), std::move(*SlabIter));
-        UnavailableSlabs.erase(SlabIter);
+        //auto It =
+        //    AvailableSlabs.insert(AvailableSlabs.begin(), std::move(*SlabIter));
+       // UnavailableSlabs.erase(SlabIter);
 
-        (*It)->setIterator(It);
+        //(*It)->setIterator(It);
     }
 
     // Check if slab is empty, and pool it if we can.
@@ -684,7 +667,7 @@ void Bucket::onFreeChunk(Slab &Slab, bool &ToPool) {
             // the list to destroy the object.
             auto It = Slab.getIterator();
             assert(It != AvailableSlabs.end());
-            AvailableSlabs.erase(It);
+           // AvailableSlabs.erase(It);
         }
     }
 }
@@ -771,25 +754,25 @@ void Bucket::updateStats(int InUse, int InPool) {
     OwnAllocCtx.getParams().CurPoolSize += InPool * SlabAllocSize();
 }
 
-void Bucket::printStats(bool &TitlePrinted, const std::string &Label) {
-    if (allocCount) {
-        if (!TitlePrinted) {
-            std::cout << Label << " memory statistics\n";
-            std::cout << std::setw(14) << "Bucket Size" << std::setw(12)
-                      << "Allocs" << std::setw(12) << "Frees" << std::setw(18)
-                      << "Allocs from Pool" << std::setw(20)
-                      << "Peak Slabs in Use" << std::setw(21)
-                      << "Peak Slabs in Pool" << std::endl;
-            TitlePrinted = true;
-        }
-        std::cout << std::setw(14) << getSize() << std::setw(12) << allocCount
-                  << std::setw(12) << freeCount << std::setw(18)
-                  << allocPoolCount << std::setw(20) << maxSlabsInUse
-                  << std::setw(21) << maxSlabsInPool << std::endl;
-    }
-}
+// void Bucket::printStats(bool &TitlePrinted, const std::string &Label) {
+//     if (allocCount) {
+//         if (!TitlePrinted) {
+//             // std::cout << Label << " memory statistics\n";
+//             // std::cout << std::setw(14) << "Bucket Size" << std::setw(12)
+//             //          << "Allocs" << std::setw(12) << "Frees" << std::setw(18)
+//             //          << "Allocs from Pool" << std::setw(20)
+//              //         << "Peak Slabs in Use" << std::setw(21)
+//              //         << "Peak Slabs in Pool" << std::endl;
+//             TitlePrinted = true;
+//         }
+//         // std::cout << std::setw(14) << getSize() << std::setw(12) << allocCount
+//         //          << std::setw(12) << freeCount << std::setw(18)
+//         //          << allocPoolCount << std::setw(20) << maxSlabsInUse
+//         //          << std::setw(21) << maxSlabsInPool << std::endl;
+//     }
+// }
 
-void *DisjointPool::AllocImpl::allocate(size_t Size, bool &FromPool) try {
+void *DisjointPool::AllocImpl::allocate(size_t Size, bool &FromPool) {
     void *Ptr;
 
     if (Size == 0) {
@@ -814,13 +797,10 @@ void *DisjointPool::AllocImpl::allocate(size_t Size, bool &FromPool) try {
     }
 
     return Ptr;
-} catch (MemoryProviderError &e) {
-    umf::getPoolLastStatusRef<DisjointPool>() = e.code;
-    return nullptr;
 }
 
 void *DisjointPool::AllocImpl::allocate(size_t Size, size_t Alignment,
-                                        bool &FromPool) try {
+                                        bool &FromPool) {
     void *Ptr;
 
     if (Size == 0) {
@@ -864,9 +844,6 @@ void *DisjointPool::AllocImpl::allocate(size_t Size, size_t Alignment,
     }
 
     return AlignPtrUp(Ptr, Alignment);
-} catch (MemoryProviderError &e) {
-    umf::getPoolLastStatusRef<DisjointPool>() = e.code;
-    return nullptr;
 }
 
 std::size_t DisjointPool::AllocImpl::sizeToIdx(size_t Size) {
@@ -905,12 +882,12 @@ void DisjointPool::AllocImpl::deallocate(void *Ptr, bool &ToPool) {
     auto *SlabPtr = AlignPtrDown(Ptr, SlabMinSize());
 
     // Lock the map on read
-    std::shared_lock<std::shared_timed_mutex> Lk(getKnownSlabsMapLock());
+    //std::shared_lock<std::shared_timed_mutex> Lk(getKnownSlabsMapLock());
 
     ToPool = false;
     auto Slabs = getKnownSlabs().equal_range(SlabPtr);
     if (Slabs.first == Slabs.second) {
-        Lk.unlock();
+       // Lk.unlock();
         memoryProviderFree(getMemHandle(), Ptr);
         return;
     }
@@ -922,7 +899,7 @@ void DisjointPool::AllocImpl::deallocate(void *Ptr, bool &ToPool) {
         if (Ptr >= Slab.getPtr() && Ptr < Slab.getEnd()) {
             // Unlock the map before freeing the chunk, it may be locked on write
             // there
-            Lk.unlock();
+           // Lk.unlock();
             auto &Bucket = Slab.getBucket();
 
             if (getParams().PoolTrace > 1) {
@@ -939,27 +916,27 @@ void DisjointPool::AllocImpl::deallocate(void *Ptr, bool &ToPool) {
         }
     }
 
-    Lk.unlock();
+   // Lk.unlock();
     // There is a rare case when we have a pointer from system allocation next
     // to some slab with an entry in the map. So we find a slab
     // but the range checks fail.
     memoryProviderFree(getMemHandle(), Ptr);
 }
 
-void DisjointPool::AllocImpl::printStats(bool &TitlePrinted,
-                                         size_t &HighBucketSize,
-                                         size_t &HighPeakSlabsInUse,
-                                         const std::string &MTName) {
-    HighBucketSize = 0;
-    HighPeakSlabsInUse = 0;
-    for (auto &B : Buckets) {
-        (*B).printStats(TitlePrinted, MTName);
-        HighPeakSlabsInUse = std::max((*B).maxSlabsInUse, HighPeakSlabsInUse);
-        if ((*B).allocCount) {
-            HighBucketSize = std::max((*B).SlabAllocSize(), HighBucketSize);
-        }
-    }
-}
+// void DisjointPool::AllocImpl::printStats(bool &TitlePrinted,
+//                                          size_t &HighBucketSize,
+//                                          size_t &HighPeakSlabsInUse,
+//                                          const std::string &MTName) {
+//     HighBucketSize = 0;
+//     HighPeakSlabsInUse = 0;
+//     for (auto &B : Buckets) {
+//         (*B).printStats(TitlePrinted, MTName);
+//         HighPeakSlabsInUse = std::max((*B).maxSlabsInUse, HighPeakSlabsInUse);
+//         if ((*B).allocCount) {
+//             HighBucketSize = std::max((*B).SlabAllocSize(), HighBucketSize);
+//         }
+//     }
+// }
 
 umf_result_t DisjointPool::initialize(umf_memory_provider_handle_t provider,
                                       umf_disjoint_pool_params_t *parameters) {
@@ -984,9 +961,9 @@ void *DisjointPool::malloc(size_t size) { // For full-slab allocations indicates
 
     if (impl->getParams().PoolTrace > 2) {
         auto MT = impl->getParams().Name;
-        std::cout << "Allocated " << std::setw(8) << size << " " << MT
-                  << " bytes from " << (FromPool ? "Pool" : "Provider") << " ->"
-                  << Ptr << std::endl;
+        //std::cout << "Allocated " << std::setw(8) << size << " " << MT
+        //          << " bytes from " << (FromPool ? "Pool" : "Provider") << " ->"
+        //          << Ptr << std::endl;
     }
     return Ptr;
 }
@@ -1009,10 +986,10 @@ void *DisjointPool::aligned_malloc(size_t size, size_t alignment) {
 
     if (impl->getParams().PoolTrace > 2) {
         auto MT = impl->getParams().Name;
-        std::cout << "Allocated " << std::setw(8) << size << " " << MT
-                  << " bytes aligned at " << alignment << " from "
-                  << (FromPool ? "Pool" : "Provider") << " ->" << Ptr
-                  << std::endl;
+        //std::cout << "Allocated " << std::setw(8) << size << " " << MT
+        //          << " bytes aligned at " << alignment << " from "
+        //          << (FromPool ? "Pool" : "Provider") << " ->" << Ptr
+        //          << std::endl;
     }
     return Ptr;
 }
@@ -1022,22 +999,20 @@ size_t DisjointPool::malloc_usable_size(void *) {
     return 0;
 }
 
-umf_result_t DisjointPool::free(void *ptr) try {
+umf_result_t DisjointPool::free(void *ptr) {
     bool ToPool;
     impl->deallocate(ptr, ToPool);
 
     if (impl->getParams().PoolTrace > 2) {
         auto MT = impl->getParams().Name;
-        std::cout << "Freed " << MT << " " << ptr << " to "
-                  << (ToPool ? "Pool" : "Provider")
-                  << ", Current total pool size "
-                  << impl->getLimits()->TotalSize.load()
-                  << ", Current pool size for " << MT << " "
-                  << impl->getParams().CurPoolSize << "\n";
+        //std::cout << "Freed " << MT << " " << ptr << " to "
+        //          << (ToPool ? "Pool" : "Provider")
+        //          << ", Current total pool size "
+        //          << impl->getLimits()->TotalSize.load()
+        //          << ", Current pool size for " << MT << " "
+        //          << impl->getParams().CurPoolSize << "\n";
     }
     return UMF_RESULT_SUCCESS;
-} catch (MemoryProviderError &e) {
-    return e.code;
 }
 
 umf_result_t DisjointPool::get_last_allocation_error() {
@@ -1052,19 +1027,17 @@ DisjointPool::~DisjointPool() {
     size_t HighBucketSize;
     size_t HighPeakSlabsInUse;
     if (impl->getParams().PoolTrace > 1) {
-        auto name = impl->getParams().Name;
-        try { // cannot throw in destructor
-            impl->printStats(TitlePrinted, HighBucketSize, HighPeakSlabsInUse,
-                             name);
-            if (TitlePrinted) {
-                std::cout << "Current Pool Size "
-                          << impl->getLimits()->TotalSize.load() << std::endl;
-                std::cout << "Suggested Setting=;"
-                          << std::string(1, tolower(name[0]))
-                          << std::string(name + 1) << ":" << HighBucketSize
-                          << "," << HighPeakSlabsInUse << ",64K" << std::endl;
-            }
-        } catch (...) { // ignore exceptions
+        //auto name = impl->getParams().Name;
+        // cannot throw in destructor
+        //impl->printStats(TitlePrinted, HighBucketSize, HighPeakSlabsInUse,
+        //                 name);
+        if (TitlePrinted) {
+            //std::cout << "Current Pool Size "
+             //         << impl->getLimits()->TotalSize.load() << std::endl;
+            //std::cout << "Suggested Setting=;"
+            //          << std::string(1, tolower(name[0]))
+            //          << std::string(name + 1) << ":" << HighBucketSize << ","
+            //          << HighPeakSlabsInUse << ",64K" << std::endl;
         }
     }
 }
