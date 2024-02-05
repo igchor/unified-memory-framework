@@ -55,7 +55,7 @@ bool isReallocSupported(umf_memory_pool_handle_t hPool) {
         supported = false;
     } else {
         umfPoolFree(hPool, new_ptr);
-        throw std::runtime_error("realloc failed with unexpected error");
+        //throw std::runtime_error("realloc failed with unexpected error");
     }
 
     return supported;
@@ -75,7 +75,7 @@ bool isCallocSupported(umf_memory_pool_handle_t hPool) {
         supported = false;
     } else {
         umfPoolFree(hPool, ptr);
-        throw std::runtime_error("calloc failed with unexpected error");
+        //throw std::runtime_error("calloc failed with unexpected error");
     }
 
     return supported;

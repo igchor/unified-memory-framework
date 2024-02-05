@@ -14,12 +14,7 @@
 
 namespace umf_test {
 
-#define NOEXCEPT_COND(cond, val, expected_val)                                                                   \
-    try {                                                                                                        \
-        cond(val, expected_val);                                                                                 \
-    } catch (                                                                                                    \
-        ...) { /* Silencing possible GoogleTestFailureException throw when gtest flag throw_on_failure is set */ \
-    }
+#define NOEXCEPT_COND(cond, val, expected_val) cond(val, expected_val);
 
 #define EXPECT_EQ_NOEXCEPT(val, expected_val)                                  \
     NOEXCEPT_COND(EXPECT_EQ, val, expected_val)

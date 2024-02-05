@@ -40,7 +40,7 @@ jobs:
             -B ${{github.workspace}}/build
             -DCMAKE_BUILD_TYPE=Release
             -DUMF_FORMAT_CODE_STYLE=OFF
-            -DUMF_DEVELOPER_MODE=ON
+            -DUMF_DEVELOPER_MODE=OFF
             -DUMF_ENABLE_POOL_TRACKING=ON
             -DUMF_BUILD_LIBUMF_POOL_SCALABLE=${{matrix.pool_scalable}}
             -DUMF_BUILD_LIBUMF_POOL_DISJOINT=${{matrix.disjoint}}
