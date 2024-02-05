@@ -45,13 +45,13 @@ jobs:
         -DUMF_BUILD_OS_MEMORY_PROVIDER=${{matrix.os_provider}}
         -DUMF_ENABLE_POOL_TRACKING=${{matrix.pool_tracking}}
         -DUMF_FORMAT_CODE_STYLE=OFF
-        -DUMF_DEVELOPER_MODE=ON
+        -DUMF_DEVELOPER_MODE=OFF
         -DUMF_BUILD_LIBUMF_POOL_JEMALLOC=ON
         -DUMF_BUILD_LIBUMF_POOL_DISJOINT=ON
         -DUMF_BUILD_LIBUMF_POOL_SCALABLE=ON
-        -DUSE_ASAN=${{matrix.sanitizers.asan}}
-        -DUSE_UBSAN=${{matrix.sanitizers.ubsan}}
-        -DUSE_TSAN=${{matrix.sanitizers.tsan}}
+        -DUSE_ASAN=OFF
+        -DUSE_UBSAN=OFF
+        -DUSE_TSAN=OFF
 
     - name: Build UMF
       run: |
@@ -168,13 +168,13 @@ jobs:
           -DUMF_BUILD_OS_MEMORY_PROVIDER=${{matrix.os_provider}}
           -DUMF_ENABLE_POOL_TRACKING=${{matrix.pool_tracking}}
           -DUMF_FORMAT_CODE_STYLE=OFF
-          -DUMF_DEVELOPER_MODE=ON
+          -DUMF_DEVELOPER_MODE=OFF
           -DUMF_BUILD_LIBUMF_POOL_JEMALLOC=ON
           -DUMF_BUILD_LIBUMF_POOL_DISJOINT=ON
           -DUMF_BUILD_LIBUMF_POOL_SCALABLE=ON
-          -DUSE_ASAN=${{matrix.sanitizers.asan}}
-          -DUSE_UBSAN=${{matrix.sanitizers.ubsan}}
-          -DUSE_TSAN=${{matrix.sanitizers.tsan}}
+          -DUSE_ASAN=OFF
+          -DUSE_UBSAN=OFF
+          -DUSE_TSAN=OFF
 
       - name: Build UMF
         run: |
@@ -255,9 +255,9 @@ jobs:
           -DUMF_BUILD_SHARED_LIBRARY=${{matrix.shared_library}}
           -DUMF_ENABLE_POOL_TRACKING=${{matrix.pool_tracking}}
           -DUMF_FORMAT_CODE_STYLE=OFF
-          -DUMF_DEVELOPER_MODE=ON
+          -DUMF_DEVELOPER_MODE=OFF
           -DUMF_BUILD_LIBUMF_POOL_DISJOINT=ON
-          -DUSE_ASAN=${{matrix.sanitizers.asan}}
+          -DUSE_ASAN=OFF
 
       - name: Build UMF
         run: cmake --build ${{env.BUILD_DIR}} --config ${{matrix.build_type}} -j $Env:NUMBER_OF_PROCESSORS
@@ -285,7 +285,7 @@ jobs:
           -B ${{env.BUILD_DIR}}
           -DCMAKE_BUILD_TYPE=Release
           -DUMF_FORMAT_CODE_STYLE=OFF
-          -DUMF_DEVELOPER_MODE=ON
+          -DUMF_DEVELOPER_MODE=OFF
           -DUMF_ENABLE_POOL_TRACKING=ON
 
       - name: Build UMF

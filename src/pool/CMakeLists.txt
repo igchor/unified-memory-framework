@@ -5,7 +5,12 @@
 # libumf_pool_disjoint
 if(UMF_BUILD_LIBUMF_POOL_DISJOINT)
     set(SAVED_CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nodefaultlibs -fno-exceptions")
+
+    if (WINDOWS)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /ZW:nostdlib /D_HAS_EXCEPTIONS=0 /GR-")
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -nodefaultlibs -fno-exceptions")
+    endif()
 
     add_umf_library(NAME disjoint_pool
                     TYPE STATIC
