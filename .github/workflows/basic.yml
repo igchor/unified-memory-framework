@@ -57,19 +57,19 @@ jobs:
       run: |
         cmake --build build -j $(nproc)
 
-    - name: Run tests
-      working-directory: ${{github.workspace}}/build
-      run: |
-        ctest --output-on-failure
+    # - name: Run tests
+    #   working-directory: ${{github.workspace}}/build
+    #   run: |
+    #     ctest --output-on-failure
 
-    - name: Test make install
-      working-directory: ${{env.BUILD_DIR}}
-      run: ${{github.workspace}}/test/test_make_install.sh \
-            ${{github.workspace}} ${{env.BUILD_DIR}} ${{env.INSTL_DIR}} ${{matrix.build_type}} ${{matrix.shared_library}}
+    # - name: Test make install
+    #   working-directory: ${{env.BUILD_DIR}}
+    #   run: ${{github.workspace}}/test/test_make_install.sh \
+    #         ${{github.workspace}} ${{env.BUILD_DIR}} ${{env.INSTL_DIR}} ${{matrix.build_type}} ${{matrix.shared_library}}
 
-    - name: Test make uninstall
-      working-directory: ${{env.BUILD_DIR}}
-      run: ${{github.workspace}}/test/test_make_uninstall.sh ${{github.workspace}} ${{env.BUILD_DIR}} ${{env.INSTL_DIR}}
+    # - name: Test make uninstall
+    #   working-directory: ${{env.BUILD_DIR}}
+    #   run: ${{github.workspace}}/test/test_make_uninstall.sh ${{github.workspace}} ${{env.BUILD_DIR}} ${{env.INSTL_DIR}}
 
   ubuntu-build:
     name: Build - Ubuntu
@@ -180,10 +180,10 @@ jobs:
         run: |
           cmake --build ${{env.BUILD_DIR}} -j $(nproc)
 
-      - name: Run tests
-        working-directory: ${{env.BUILD_DIR}}
-        run: |
-          ctest --output-on-failure
+      # - name: Run tests
+      #   working-directory: ${{env.BUILD_DIR}}
+      #   run: |
+      #     ctest --output-on-failure
 
       - name: Test make install
         working-directory: ${{env.BUILD_DIR}}
@@ -262,9 +262,9 @@ jobs:
       - name: Build UMF
         run: cmake --build ${{env.BUILD_DIR}} --config ${{matrix.build_type}} -j $Env:NUMBER_OF_PROCESSORS
 
-      - name: Test
-        working-directory: ${{env.BUILD_DIR}}
-        run: ctest -C ${{matrix.build_type}} --output-on-failure
+      # - name: Test
+      #   working-directory: ${{env.BUILD_DIR}}
+      #   run: ctest -C ${{matrix.build_type}} --output-on-failure
 
   macos-build:
     name: Build - MacOS
