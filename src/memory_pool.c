@@ -60,10 +60,16 @@ size_t umfPoolMallocUsableSize(umf_memory_pool_handle_t hPool, void *ptr) {
 
 umf_result_t umfPoolFree(umf_memory_pool_handle_t hPool, void *ptr) {
     UMF_CHECK((hPool != NULL), UMF_RESULT_ERROR_INVALID_ARGUMENT);
-    return hPool->ops.free(hPool->pool_priv, ptr);
+    return hPool->ops.free(hPool->pool_priv, ptr, 0);
 }
 
 umf_result_t umfPoolGetLastAllocationError(umf_memory_pool_handle_t hPool) {
     UMF_CHECK((hPool != NULL), UMF_RESULT_ERROR_INVALID_ARGUMENT);
     return hPool->ops.get_last_allocation_error(hPool->pool_priv);
+}
+
+umf_result_t umfPoolFreeSized(umf_memory_pool_handle_t hPool, void *ptr,
+                              size_t size) {
+    UMF_CHECK((hPool != NULL), UMF_RESULT_ERROR_INVALID_ARGUMENT);
+    return hPool->ops.free(hPool->pool_priv, ptr, size);
 }

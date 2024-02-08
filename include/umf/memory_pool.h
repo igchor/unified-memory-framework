@@ -124,6 +124,9 @@ UMF_EXPORT size_t umfPoolMallocUsableSize(umf_memory_pool_handle_t hPool,
 ///
 UMF_EXPORT umf_result_t umfPoolFree(umf_memory_pool_handle_t hPool, void *ptr);
 
+UMF_EXPORT umf_result_t umfPoolFreeSized(umf_memory_pool_handle_t hPool,
+                                         void *ptr, size_t size);
+
 ///
 /// @brief Frees the memory space pointed by ptr if it belongs to UMF pool, does nothing otherwise.
 /// @param ptr pointer to the allocated memory

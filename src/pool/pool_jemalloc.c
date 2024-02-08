@@ -284,8 +284,9 @@ static void *je_malloc(void *pool, size_t size) {
     return ptr;
 }
 
-static umf_result_t je_free(void *pool, void *ptr) {
+static umf_result_t je_free(void *pool, void *ptr, size_t size) {
     (void)pool; // unused
+    (void)size;
     assert(pool);
 
     if (ptr != NULL) {
