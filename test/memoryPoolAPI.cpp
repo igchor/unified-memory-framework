@@ -183,12 +183,6 @@ TEST_P(umfPoolWithCreateFlagsTest, umfPoolCreateFlagsNullPoolHandle) {
     umfMemoryProviderDestroy(provider);
 }
 
-TEST_P(umfPoolWithCreateFlagsTest, umfPoolCreateFlagsInvalidProviders) {
-    umf_memory_pool_handle_t hPool;
-    auto ret = umfPoolCreate(&MALLOC_POOL_OPS, nullptr, nullptr, flags, &hPool);
-    ASSERT_EQ(ret, UMF_RESULT_ERROR_INVALID_ARGUMENT);
-}
-
 struct poolInitializeTest : umf_test::test,
                             ::testing::WithParamInterface<umf_result_t> {};
 

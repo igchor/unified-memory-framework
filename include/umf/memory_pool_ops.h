@@ -99,7 +99,7 @@ typedef struct umf_memory_pool_ops_t {
     ///         Whether any status other than UMF_RESULT_SUCCESS can be returned
     ///         depends on the memory provider used by the \p pool.
     ///
-    umf_result_t (*free)(void *pool, void *);
+    umf_result_t (*free)(void *pool, void *, size_t size);
 
     ///
     /// @brief Retrieve \p umf_result_t representing the error of the last failed allocation

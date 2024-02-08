@@ -73,7 +73,8 @@ static size_t traceMallocUsableSize(void *pool, void *ptr) {
     return umfPoolMallocUsableSize(trace_pool->params.hUpstreamPool, ptr);
 }
 
-static umf_result_t traceFree(void *pool, void *ptr) {
+static umf_result_t traceFree(void *pool, void *ptr, size_t size) {
+    (void)size;
     trace_pool_t *trace_pool = (trace_pool_t *)pool;
 
     trace_pool->params.trace("free");

@@ -33,6 +33,7 @@ set(UMF_SOURCES
     provider/provider_tracking.c
     critnib/critnib.c
     pool/pool_proxy.c
+    pool/pool_base.c
 )
 
 set(UMF_SOURCES_LINUX

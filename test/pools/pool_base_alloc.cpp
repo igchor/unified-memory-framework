@@ -4,21 +4,24 @@
 
 #include <unordered_map>
 
-#include "umf/pools/pool_scalable.h"
-#include "umf/providers/provider_os_memory.h"
+#include "umf/pools/pool_base.h"
 
 #include "pool.hpp"
 #include "poolFixtures.hpp"
 #include "provider.hpp"
 
-#include "base_alloc_global.h"
-
 struct base_alloc_pool : public umf_test::pool_base_t {
     std::unordered_map<void *, size_t> sizes;
     std::mutex m;
+    umf_memory_pool_handle_t pool;
+
+    umf_result_t initialize(umf_memory_provider_handle_t) {
+        auto ops = umfBasePoolOps();
+        return umfPoolCreate(ops, nullptr, nullptr, 0, &pool);
+    }
 
     void *malloc(size_t size) noexcept {
-        auto *ptr = umf_ba_global_alloc(size);
+        auto *ptr = umfPoolMalloc(pool, size);
         std::unique_lock<std::mutex> l(m);
         sizes[ptr] = size;
         return ptr;
@@ -42,15 +45,14 @@ struct base_alloc_pool : public umf_test::pool_base_t {
         std::unique_lock<std::mutex> l(m);
         return sizes[ptr];
     }
-    umf_result_t free(void *ptr) noexcept {
+    umf_result_t free(void *ptr, size_t) noexcept {
         size_t size;
         {
             std::unique_lock<std::mutex> l(m);
             size = sizes[ptr];
         }
 
-        umf_ba_global_free(ptr, size);
-        return UMF_RESULT_SUCCESS;
+        return umfPoolFreeSized(pool, ptr, size);
     }
     umf_result_t get_last_allocation_error() {
         return umf::getPoolLastStatusRef<base_alloc_pool>();
