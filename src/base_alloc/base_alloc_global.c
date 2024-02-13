@@ -17,19 +17,19 @@
 static umf_ba_pool_t *BA_pool = NULL;
 static UTIL_ONCE_FLAG ba_is_initialized = UTIL_ONCE_FLAG_INIT;
 
-static void umf_ba_destroy_global(void) {
-    assert(BA_pool);
-    umf_ba_destroy(BA_pool);
-    BA_pool = NULL;
-}
-
 static void umf_ba_create_global(void) {
     assert(BA_pool == NULL);
     BA_pool = umf_ba_create(SIZE_BA_POOL_CHUNK);
+}
+
+// TODO: we are currently leaking BA_pool on windows. Fix this.
+#ifndef _WIN32
+void __attribute__((destructor)) umf_ba_destroy_global(void) {
     if (BA_pool) {
-        atexit(umf_ba_destroy_global);
+        umf_ba_destroy(BA_pool);
     }
 }
+#endif
 
 umf_ba_pool_t *umf_ba_get_pool(size_t size) {
     util_init_once(&ba_is_initialized, umf_ba_create_global);
