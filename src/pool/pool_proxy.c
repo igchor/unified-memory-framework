@@ -11,6 +11,7 @@
 #include <umf/pools/pool_proxy.h>
 
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "utils_common.h"
@@ -38,23 +39,36 @@ proxy_pool_initialize(umf_memory_provider_handle_t hProvider, void *params,
     return UMF_RESULT_SUCCESS;
 }
 
-static void proxy_pool_finalize(void *pool) { free(pool); }
+static void proxy_pool_finalize(void *pool) {
+    free(pool);
+    fprintf(stderr, "proxy pool finalize\n");
+}
 
-static void *proxy_aligned_malloc(void *pool, size_t size, size_t alignment) {
+static void *proxy_aligned_malloc_internal(void *pool, size_t size,
+                                           size_t alignment) {
     assert(pool);
 
     void *ptr;
     struct proxy_memory_pool *hPool = (struct proxy_memory_pool *)pool;
 
     umf_result_t ret =
-        umfMemoryProviderAlloc(hPool->hProvider, size, alignment, &ptr);
+        umfMemoryProviderAlloc(hPool->hProvider, size + 8, alignment, &ptr);
     if (ret != UMF_RESULT_SUCCESS) {
         TLS_last_allocation_error = ret;
         return NULL;
     }
 
-    TLS_last_allocation_error = UMF_RESULT_SUCCESS;
-    return ptr;
+    if (ptr) {
+        TLS_last_allocation_error = UMF_RESULT_SUCCESS;
+        *((size_t *)ptr) = size;
+        return (void *)((uintptr_t)ptr + 8);
+    } else {
+        return NULL;
+    }
+}
+
+static void *proxy_aligned_malloc(void *pool, size_t size, size_t alignment) {
+    return proxy_aligned_malloc_internal(pool, size, alignment);
 }
 
 static void *proxy_malloc(void *pool, size_t size) {
@@ -66,34 +80,45 @@ static void *proxy_malloc(void *pool, size_t size) {
 static void *proxy_calloc(void *pool, size_t num, size_t size) {
     assert(pool);
 
-    (void)pool;
-    (void)num;
-    (void)size;
-
-    // Currently we cannot implement calloc in a way that would
-    // work for memory that is inaccessible on the host
-    TLS_last_allocation_error = UMF_RESULT_ERROR_NOT_SUPPORTED;
-    return NULL;
-}
-
-static void *proxy_realloc(void *pool, void *ptr, size_t size) {
-    assert(pool);
-
-    (void)pool;
-    (void)ptr;
-    (void)size;
-
-    // Currently we cannot implement realloc in a way that would
-    // work for memory that is inaccessible on the host
-    TLS_last_allocation_error = UMF_RESULT_ERROR_NOT_SUPPORTED;
-    return NULL;
+    void *ptr = proxy_malloc(pool, num * size);
+    if (ptr) {
+        memset(ptr, 0, num * size);
+    }
+    return ptr;
 }
 
 static umf_result_t proxy_free(void *pool, void *ptr) {
     assert(pool);
 
+    if (!ptr)
+        return UMF_RESULT_SUCCESS;
+
     struct proxy_memory_pool *hPool = (struct proxy_memory_pool *)pool;
-    return umfMemoryProviderFree(hPool->hProvider, ptr, 0);
+    return umfMemoryProviderFree(hPool->hProvider, ((char *)ptr - 8), 0);
+}
+
+static void *proxy_realloc(void *pool, void *ptr, size_t size) {
+    assert(pool);
+
+    if (size == 0) {
+       proxy_free(pool, ptr);
+    }
+
+    if (ptr == NULL) {
+        return proxy_malloc(pool, size);
+    }
+
+    fprintf(stderr, "proxy_realloc\n");
+
+    size_t old_size = *((size_t *)(((uintptr_t)ptr) - 8));
+    if (old_size >= size) {
+        return ptr;
+    }
+
+    void *new_ptr = proxy_malloc(pool, size);
+    memcpy(new_ptr, ptr, old_size);
+    proxy_free(pool, ptr);
+    return new_ptr;
 }
 
 static size_t proxy_malloc_usable_size(void *pool, void *ptr) {
