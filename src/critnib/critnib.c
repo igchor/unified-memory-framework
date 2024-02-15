@@ -270,8 +270,12 @@ void critnib_delete(struct critnib *c) {
         umf_ba_free(c->pool_leaves, c->pending_del_leaves[i]);
     }
 
+    fprintf(stderr, "Start critnib cleanup\n");
+
     umf_ba_destroy(c->pool_nodes);
     umf_ba_destroy(c->pool_leaves);
+
+    fprintf(stderr, "Stop critnib cleanup\n");
     umf_ba_linear_destroy(
         c->pool_linear); // free all its allocations and destroy
 

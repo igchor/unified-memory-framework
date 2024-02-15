@@ -31,6 +31,7 @@ void umf_ba_destroy_global(void) {
     if (BA_pool) {
         umf_ba_pool_t *pool = BA_pool;
         BA_pool = NULL;
+        fprintf(stderr, "Destroy global\n");
         umf_ba_destroy(pool);
     }
 }

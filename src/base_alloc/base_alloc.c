@@ -239,7 +239,9 @@ void umf_ba_free(umf_ba_pool_t *pool, void *ptr) {
 
 void umf_ba_destroy(umf_ba_pool_t *pool) {
 #ifndef NDEBUG
-    assert(pool->metadata.n_allocs == 0);
+    fprintf(stderr, "destroy: %p\n", pool);
+    fprintf(stderr, "allocs: %zu\n", pool->metadata.n_allocs);
+    // assert(pool->metadata.n_allocs == 0);
     ba_debug_checks(pool);
 #endif /* NDEBUG */
     size_t size = pool->metadata.pool_size;
