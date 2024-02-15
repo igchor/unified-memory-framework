@@ -45,7 +45,7 @@ typedef struct os_memory_provider_t {
     // others
     int traces; // log level of debug traces
 
-    hwloc_topology_t topo;
+    //    hwloc_topology_t topo;
 
     // saved pointer to the global base allocator
     umf_ba_pool_t *base_allocator;
@@ -107,18 +107,18 @@ static umf_result_t nodemask_to_hwloc_nodeset(const unsigned long *nodemask,
         return UMF_RESULT_ERROR_INVALID_ARGUMENT;
     }
 
-    *out_nodeset = hwloc_bitmap_alloc();
-    if (!*out_nodeset) {
-        return UMF_RESULT_ERROR_OUT_OF_HOST_MEMORY;
-    }
+    // *out_nodeset = hwloc_bitmap_alloc();
+    // if (!*out_nodeset) {
+    //     return UMF_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+    // }
 
-    if (maxnode == 0 || nodemask == NULL) {
-        return UMF_RESULT_SUCCESS;
-    }
+    // if (maxnode == 0 || nodemask == NULL) {
+    //     return UMF_RESULT_SUCCESS;
+    // }
 
-    unsigned bits_per_mask = sizeof(unsigned long) * 8;
-    hwloc_bitmap_from_ulongs(
-        *out_nodeset, (maxnode + bits_per_mask - 1) / bits_per_mask, nodemask);
+    // unsigned bits_per_mask = sizeof(unsigned long) * 8;
+    // hwloc_bitmap_from_ulongs(
+    //     *out_nodeset, (maxnode + bits_per_mask - 1) / bits_per_mask, nodemask);
 
     return UMF_RESULT_SUCCESS;
 }
@@ -260,48 +260,48 @@ static umf_result_t os_initialize(void *params, void **provider) {
     memset(os_provider, 0, sizeof(*os_provider));
     os_provider->base_allocator = base_allocator;
 
-    int r = hwloc_topology_init(&os_provider->topo);
-    if (r) {
-        if (os_provider->traces) {
-            fprintf(stderr, "HWLOC topology init failed\n");
-        }
-        ret = UMF_RESULT_ERROR_OUT_OF_HOST_MEMORY;
-        goto err_free_os_provider;
-    }
+    // int r = hwloc_topology_init(&os_provider->topo);
+    // if (r) {
+    //     if (os_provider->traces) {
+    //         fprintf(stderr, "HWLOC topology init failed\n");
+    //     }
+    //     ret = UMF_RESULT_ERROR_OUT_OF_HOST_MEMORY;
+    //     goto err_free_os_provider;
+    // }
 
-    r = hwloc_topology_load(os_provider->topo);
-    if (r) {
-        os_store_last_native_error(UMF_OS_RESULT_ERROR_TOPO_DISCOVERY_FAILED,
-                                   0);
-        if (os_provider->traces) {
-            fprintf(stderr, "HWLOC topology discovery failed\n");
-        }
-        ret = UMF_RESULT_ERROR_MEMORY_PROVIDER_SPECIFIC;
-        goto err_destroy_hwloc_topology;
-    }
+    // r = hwloc_topology_load(os_provider->topo);
+    // if (r) {
+    //     os_store_last_native_error(UMF_OS_RESULT_ERROR_TOPO_DISCOVERY_FAILED,
+    //                                0);
+    //     if (os_provider->traces) {
+    //         fprintf(stderr, "HWLOC topology discovery failed\n");
+    //     }
+    //     ret = UMF_RESULT_ERROR_MEMORY_PROVIDER_SPECIFIC;
+    //     goto err_destroy_hwloc_topology;
+    // }
 
     ret = translate_params(in_params, os_provider);
     if (ret != UMF_RESULT_SUCCESS) {
         goto err_destroy_hwloc_topology;
     }
 
-    if (os_provider->traces) {
-        char *strp = NULL;
-        hwloc_bitmap_list_asprintf(&strp, os_provider->nodeset);
+    // if (os_provider->traces) {
+    //     char *strp = NULL;
+    //     hwloc_bitmap_list_asprintf(&strp, os_provider->nodeset);
 
-        if (strp) {
-            printf("OS provider initialized with NUMA nodes: %s\n", strp);
-        }
+    //     if (strp) {
+    //         printf("OS provider initialized with NUMA nodes: %s\n", strp);
+    //     }
 
-        free(strp);
-    }
+    //     free(strp);
+    // }
 
     *provider = os_provider;
 
     return UMF_RESULT_SUCCESS;
 
 err_destroy_hwloc_topology:
-    hwloc_topology_destroy(os_provider->topo);
+    // hwloc_topology_destroy(os_provider->topo);
 err_free_os_provider:
     umf_ba_free(base_allocator, os_provider);
     return ret;
@@ -314,8 +314,8 @@ static void os_finalize(void *provider) {
     }
 
     os_memory_provider_t *os_provider = provider;
-    hwloc_bitmap_free(os_provider->nodeset);
-    hwloc_topology_destroy(os_provider->topo);
+    //    hwloc_bitmap_free(os_provider->nodeset);
+    //    hwloc_topology_destroy(os_provider->topo);
     umf_ba_free(os_provider->base_allocator, os_provider);
 }
 
@@ -324,33 +324,33 @@ static umf_result_t os_get_min_page_size(void *provider, void *ptr,
 
 static void print_numa_nodes(os_memory_provider_t *os_provider, void *addr,
                              size_t size) {
-    hwloc_bitmap_t nodeset = hwloc_bitmap_alloc();
-    if (!nodeset) {
-        fprintf(stderr,
-                "cannot print assigned NUMA node due to allocation failure\n");
-    } else {
-        int ret = hwloc_get_area_memlocation(os_provider->topo, addr, 1,
-                                             nodeset, HWLOC_MEMBIND_BYNODESET);
-        if (ret) {
-            fprintf(stderr, "cannot print assigned NUMA node (errno = %i)\n",
-                    errno);
-            perror("get_mempolicy()");
-        } else {
-            char *strp = NULL;
-            hwloc_bitmap_list_asprintf(&strp, nodeset);
+    // hwloc_bitmap_t nodeset = hwloc_bitmap_alloc();
+    // if (!nodeset) {
+    //     fprintf(stderr,
+    //             "cannot print assigned NUMA node due to allocation failure\n");
+    // } else {
+    //     int ret = hwloc_get_area_memlocation(os_provider->topo, addr, 1,
+    //                                          nodeset, HWLOC_MEMBIND_BYNODESET);
+    //     if (ret) {
+    //         fprintf(stderr, "cannot print assigned NUMA node (errno = %i)\n",
+    //                 errno);
+    //         perror("get_mempolicy()");
+    //     } else {
+    //         char *strp = NULL;
+    //         hwloc_bitmap_list_asprintf(&strp, nodeset);
 
-            if (!strp) {
-                fprintf(stderr, "cannot print assigned NUMA node due to "
-                                "allocation failure\n");
-            } else {
-                printf("alloc(%zu) = 0x%llx, allocate on NUMA nodes = %s\n",
-                       size, (unsigned long long)addr, strp);
-            }
-            free(strp);
-        }
-    }
+    //         if (!strp) {
+    //             fprintf(stderr, "cannot print assigned NUMA node due to "
+    //                             "allocation failure\n");
+    //         } else {
+    //             printf("alloc(%zu) = 0x%llx, allocate on NUMA nodes = %s\n",
+    //                    size, (unsigned long long)addr, strp);
+    //         }
+    //         free(strp);
+    //     }
+    // }
 
-    hwloc_bitmap_free(nodeset);
+    // hwloc_bitmap_free(nodeset);
 }
 
 static umf_result_t os_alloc(void *provider, size_t size, size_t alignment,
@@ -408,20 +408,20 @@ static umf_result_t os_alloc(void *provider, size_t size, size_t alignment,
     }
 
     errno = 0;
-    if (hwloc_bitmap_iszero(os_provider->nodeset)) {
-        // Hwloc_set_area_membind fails if empty nodeset is passed so if no node is specified,
-        // just pass all available nodes. For modes where no node is needed, they will be
-        // ignored anyway.
-        hwloc_const_nodeset_t complete_nodeset =
-            hwloc_topology_get_complete_nodeset(os_provider->topo);
-        ret = hwloc_set_area_membind(os_provider->topo, addr, size,
-                                     complete_nodeset, os_provider->numa_policy,
-                                     os_provider->numa_flags);
-    } else {
-        ret = hwloc_set_area_membind(
-            os_provider->topo, addr, size, os_provider->nodeset,
-            os_provider->numa_policy, os_provider->numa_flags);
-    }
+    //if (hwloc_bitmap_iszero(os_provider->nodeset)) {
+    // Hwloc_set_area_membind fails if empty nodeset is passed so if no node is specified,
+    // just pass all available nodes. For modes where no node is needed, they will be
+    // ignored anyway.
+    // hwloc_const_nodeset_t complete_nodeset =
+    //     hwloc_topology_get_complete_nodeset(os_provider->topo);
+    // ret = hwloc_set_area_membind(os_provider->topo, addr, size,
+    //                              complete_nodeset, os_provider->numa_policy,
+    //                              os_provider->numa_flags);
+    //} else {
+    // ret = hwloc_set_area_membind(
+    //     os_provider->topo, addr, size, os_provider->nodeset,
+    //     os_provider->numa_policy, os_provider->numa_flags);
+    // }
 
     if (ret) {
         os_store_last_native_error(UMF_OS_RESULT_ERROR_BIND_FAILED, errno);
