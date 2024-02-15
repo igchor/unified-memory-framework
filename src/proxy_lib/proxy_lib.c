@@ -24,7 +24,7 @@
 
 #include <umf/memory_pool.h>
 #include <umf/memory_provider.h>
-#include <umf/pools/pool_jemalloc.h>
+#include <umf/pools/pool_proxy.h>
 #include <umf/providers/provider_os_memory.h>
 
 #include "base_alloc_linear.h"
@@ -80,8 +80,8 @@ void proxy_lib_create_common(void) {
         exit(-1);
     }
 
-    umf_result = umfPoolCreate(umfJemallocPoolOps(), OS_memory_provider, NULL,
-                               0, &Proxy_pool);
+    umf_result = umfPoolCreate(umfProxyPoolOps(), OS_memory_provider, NULL, 0,
+                               &Proxy_pool);
     if (umf_result != UMF_RESULT_SUCCESS) {
         fprintf(stderr, "error: creating jemalloc pool manager failed\n");
         exit(-1);
@@ -108,6 +108,8 @@ static inline void *ba_generic_realloc(umf_ba_linear_pool_t *pool, void *ptr,
         // it means free(ptr), but linear base allocator does not implement free()
         return NULL;
     }
+
+    fprintf(stderr, "ba_generic_realloc\n");
 
     assert(ptr); // it is verified in the main realloc()
 
@@ -174,7 +176,11 @@ void *malloc(size_t size) {
         return ptr;
     }
 
-    return ba_leak_malloc(size);
+    void *ptr = ba_leak_malloc(size);
+
+    //fprintf(stderr, "malloc leak %p\n", ptr);
+
+    return ptr;
 }
 
 void *calloc(size_t nmemb, size_t size) {
@@ -219,8 +225,9 @@ void free(void *ptr) {
     }
 
     if (Proxy_pool) {
+        //fprintf(stderr, "free proxy pool %p\n", ptr);
         if (umfPoolFree(Proxy_pool, ptr) != UMF_RESULT_SUCCESS) {
-            fprintf(stderr, "error: umfPoolFree() failed\n");
+            // fprintf(stderr, "error: umfPoolFree() failed\n");
             assert(0);
         }
         return;
