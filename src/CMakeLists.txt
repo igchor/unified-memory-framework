@@ -23,6 +23,13 @@ endif()
 
 set(BA_SOURCES ${BA_SOURCES} PARENT_SCOPE)
 
+include(FetchContent)
+FetchContent_Declare(backward
+    GIT_REPOSITORY https://github.com/bombela/backward-cpp
+    GIT_TAG master
+)
+FetchContent_MakeAvailable(backward)
+
 set(UMF_SOURCES
     ${BA_SOURCES}
     memory_pool.c
@@ -31,6 +38,7 @@ set(UMF_SOURCES
     memory_target.c
     memspace.c
     provider/provider_tracking.c
+    provider/helper.cpp
     critnib/critnib.c
     pool/pool_proxy.c
 )
@@ -70,7 +78,7 @@ if(UMF_BUILD_SHARED_LIBRARY)
     add_umf_library(NAME umf
                     TYPE SHARED
                     SRCS ${UMF_SOURCES}
-                    LIBS ${UMF_LIBS}
+                    LIBS ${UMF_LIBS} Backward::Interface
                     LINUX_MAP_FILE ${CMAKE_CURRENT_SOURCE_DIR}/libumf.map
                     WINDOWS_DEF_FILE ${CMAKE_CURRENT_SOURCE_DIR}/libumf.def)
     target_compile_definitions(umf PUBLIC UMF_SHARED_LIBRARY)

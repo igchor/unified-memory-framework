@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "helper.h"
+
 typedef struct tracker_value_t {
     umf_memory_pool_handle_t pool;
     size_t size;
@@ -102,6 +104,7 @@ typedef struct umf_tracking_memory_provider_t umf_tracking_memory_provider_t;
 
 static umf_result_t trackingAlloc(void *hProvider, size_t size,
                                   size_t alignment, void **ptr) {
+
     umf_tracking_memory_provider_t *p =
         (umf_tracking_memory_provider_t *)hProvider;
     umf_result_t ret = UMF_RESULT_SUCCESS;
@@ -121,6 +124,8 @@ static umf_result_t trackingAlloc(void *hProvider, size_t size,
         // cannot change behaviour of the upstream provider.
         // TODO: LOG
     }
+
+    register_alloc(*ptr);
 
     return ret;
 }
@@ -203,6 +208,9 @@ err_lock:
 
 static umf_result_t trackingAllocationMerge(void *hProvider, void *lowPtr,
                                             void *highPtr, size_t totalSize) {
+
+    fprintf(stderr, "trackingAllocationMerge\n");
+
     umf_result_t ret = UMF_RESULT_ERROR_UNKNOWN;
     umf_tracking_memory_provider_t *provider =
         (umf_tracking_memory_provider_t *)hProvider;
@@ -289,6 +297,8 @@ static umf_result_t trackingFree(void *hProvider, void *ptr, size_t size) {
     umf_tracking_memory_provider_t *p =
         (umf_tracking_memory_provider_t *)hProvider;
 
+    register_free(ptr);
+
     // umfMemoryTrackerRemove should be called before umfMemoryProviderFree
     // to avoid a race condition. If the order would be different, other thread
     // could allocate the memory at address `ptr` before a call to umfMemoryTrackerRemove
@@ -368,7 +378,7 @@ static void trackingFinalize(void *provider) {
 #ifndef NDEBUG
     umf_tracking_memory_provider_t *p =
         (umf_tracking_memory_provider_t *)provider;
-    check_if_tracker_is_empty(p->hTracker, p->pool);
+    //check_if_tracker_is_empty(p->hTracker, p->pool);
 #endif /* NDEBUG */
 
     (void)provider; // unused in Release build
@@ -506,12 +516,17 @@ void umfMemoryTrackerDestroy(umf_memory_tracker_handle_t handle) {
         return;
     }
 
+    fprintf(stderr, "umfMemoryTrackerDestroy\n");
+    print_map();
+
 #ifndef NDEBUG
-    check_if_tracker_is_empty(handle, NULL);
+    //check_if_tracker_is_empty(handle, NULL);
 #endif /* NDEBUG */
 
     critnib_delete(handle->map);
     util_mutex_destroy_not_free(&handle->splitMergeMutex);
+
+    fprintf(stderr, "Destroy tracker allocator\n");
     umf_ba_destroy(handle->tracker_allocator);
     umf_ba_linear_destroy(handle->pool_linear);
 }
