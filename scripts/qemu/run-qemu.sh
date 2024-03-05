@@ -43,7 +43,7 @@ do
 sleep 1
 done
 
-scp -P 2222 /opt/shared/run-build.sh cxltest@172.17.0.2:/home/cxltest
+scp -P 2222 /opt/shared/scripts/qemu/run-build.sh cxltest@172.17.0.2:/home/cxltest
 
 ssh cxltest@172.17.0.2 -p 2222 -t 'sudo apt update && sudo apt install git libnuma-dev libjemalloc-dev libtbb-dev libhwloc-dev cmake gcc'
 ssh cxltest@172.17.0.2 -p 2222 -t 'bash /home/cxltest/run-build.sh ${CI_REPO_SLUG} ${CI_BRANCH}'
