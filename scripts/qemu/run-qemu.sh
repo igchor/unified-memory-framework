@@ -34,7 +34,7 @@ echo pass | sudo -Sk qemu-system-x86_64 \
 -numa hmat-lb,initiator=1,target=1,hierarchy=memory,data-type=access-bandwidth,bandwidth=10485760 \
 -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-latency,latency=27 \
 -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-bandwidth,bandwidth=1048576 \
--daemonize -loadvm cxl
+-daemonize -loadvm cxl_q35
 
 # wait for qemu to boot
 ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
