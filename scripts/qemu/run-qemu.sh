@@ -37,10 +37,12 @@ echo pass | sudo -Sk qemu-system-x86_64 \
 -daemonize
 
 # wait for qemu to boot
-until ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
+ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
+while [ $? -ne 0 ]
 do
 echo "Trying to connect..."
 sleep 5
+ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
 done
 
 scp -P 2222 /opt/shared/scripts/qemu/run-build.sh cxltest@172.17.0.2:/home/cxltest
