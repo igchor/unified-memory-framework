@@ -25,7 +25,7 @@ jobs:
       env:
         CI_BRANCH: ${{ github.head_ref || github.ref_name }}
         CI_REPO: https://github.com/${{github.repository}}
-      options: "--privileged"
+      options: "--privileged --user user"
 
     steps:
       - name: Checkout
