@@ -25,6 +25,7 @@ jobs:
       env:
         CI_BRANCH: ${{ github.head_ref || github.ref_name }}
         CI_REPO: https://github.com/${{github.repository}}
+        HOME: /home/user
       options: "--privileged --user user"
 
     steps:
