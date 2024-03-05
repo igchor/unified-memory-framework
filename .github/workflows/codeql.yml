@@ -28,5 +28,9 @@ jobs:
       options: "--privileged"
 
     steps:
+      - name: test
+        run: pwd
+      - name: test
+        run: ls
       - name: run build in qemu
         run: /opt/shared/run-qemu.sh
