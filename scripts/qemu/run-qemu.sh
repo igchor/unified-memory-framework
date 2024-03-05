@@ -6,7 +6,7 @@ echo pass | sudo -Sk qemu-system-x86_64 \
 -machine pc,accel=kvm,hmat=on \
 -enable-kvm -net nic -net user,hostfwd=tcp::2222-:22 \
 -m 3G \
--smp 4 \
+-smp $(nproc) \
 -object memory-backend-ram,size=1G,id=ram0 \
 -object memory-backend-ram,size=1G,id=ram1 \
 -object memory-backend-ram,size=1G,id=ram2 \
@@ -34,7 +34,7 @@ echo pass | sudo -Sk qemu-system-x86_64 \
 -numa hmat-lb,initiator=1,target=1,hierarchy=memory,data-type=access-bandwidth,bandwidth=10485760 \
 -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-latency,latency=27 \
 -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-bandwidth,bandwidth=1048576 \
--daemonize 
+-nographic
 
 # wait for qemu to boot
 # until ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
