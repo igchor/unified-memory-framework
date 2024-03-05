@@ -6,7 +6,6 @@ on: workflow_call
 env:
   BUILD_DIR : "${{github.workspace}}/build/"
   INSTL_DIR : "${{github.workspace}}/build/install-dir"
-  HOST_WORKDIR : {{github.workspace}}
 
 permissions:
   contents: read
