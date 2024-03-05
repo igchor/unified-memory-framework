@@ -38,7 +38,7 @@ echo pass | sudo -Sk qemu-system-x86_64 \
 -daemonize 
 
 # wait for qemu to boot
-until ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/cxltest/.ssh/known_hosts
+until ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
 do
 sleep 1
 done
