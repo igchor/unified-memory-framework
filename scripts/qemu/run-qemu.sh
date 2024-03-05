@@ -5,8 +5,8 @@ echo pass | sudo -Sk qemu-system-x86_64 \
 -cdrom /var/ubuntu-cloud-init.iso \
 -machine pc,accel=kvm,usb=off,hmat=on \
 -enable-kvm -net nic -net user,hostfwd=tcp::2222-:22 \
--m 1G \
--smp 3 \
+-m 300M \
+-smp 4 \
 -object memory-backend-ram,size=100M,id=ram0 \
 -object memory-backend-ram,size=100M,id=ram1 \
 -object memory-backend-ram,size=100M,id=ram2 \
