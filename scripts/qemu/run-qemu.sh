@@ -37,12 +37,12 @@ echo pass | sudo -Sk qemu-system-x86_64 \
 -daemonize 
 
 # wait for qemu to boot
-until ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
-do
-sleep 1
-done
+# until ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
+# do
+# sleep 1
+# done
 
-scp -P 2222 /opt/shared/scripts/qemu/run-build.sh cxltest@172.17.0.2:/home/cxltest
+scp -o StrictHostKeyChecking=no -P 2222 /opt/shared/scripts/qemu/run-build.sh cxltest@172.17.0.2:/home/cxltest
 
-ssh cxltest@172.17.0.2 -p 2222 -t 'sudo apt update && sudo apt install git libnuma-dev libjemalloc-dev libtbb-dev libhwloc-dev cmake gcc'
-ssh cxltest@172.17.0.2 -p 2222 -t 'bash /home/cxltest/run-build.sh ${CI_REPO_SLUG} ${CI_BRANCH}'
+ssh -o StrictHostKeyChecking=no cxltest@172.17.0.2 -p 2222 -t 'sudo apt update && sudo apt install git libnuma-dev libjemalloc-dev libtbb-dev libhwloc-dev cmake gcc'
+ssh -o StrictHostKeyChecking=no cxltest@172.17.0.2 -p 2222 -t 'bash /home/cxltest/run-build.sh ${CI_REPO_SLUG} ${CI_BRANCH}'
