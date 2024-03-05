@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo pass | sudo -Sk qemu-system-x86_64 \
--drive file=./lunar-server-cloudimg-amd64.img,format=qcow2,index=0,media=disk,id=hd \
+-drive file=/home/user/lunar-server-cloudimg-amd64.img,format=qcow2,index=0,media=disk,id=hd \
 -cdrom /var/ubuntu-cloud-init.iso \
 -machine pc,accel=kvm,hmat=on \
 -enable-kvm -net nic -net user,hostfwd=tcp::2222-:22 \
@@ -34,7 +34,6 @@ echo pass | sudo -Sk qemu-system-x86_64 \
 -numa hmat-lb,initiator=1,target=1,hierarchy=memory,data-type=access-bandwidth,bandwidth=10485760 \
 -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-latency,latency=27 \
 -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-bandwidth,bandwidth=1048576 \
--virtfs local,path=/home/user,mount_tag=host0,security_model=passthrough,id=host0 \
 -daemonize 
 
 # wait for qemu to boot
