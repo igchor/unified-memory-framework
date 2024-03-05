@@ -3,13 +3,13 @@
 echo pass | sudo -Sk qemu-system-x86_64 \
 -drive file=/home/user/lunar-server-cloudimg-amd64.img,format=qcow2,index=0,media=disk,id=hd \
 -cdrom /var/ubuntu-cloud-init.iso \
--machine pc,accel=kvm,hmat=on \
+-machine pc,accel=kvm,usb=off,hmat=on \
 -enable-kvm -net nic -net user,hostfwd=tcp::2222-:22 \
--m 3G \
--smp $(nproc) \
--object memory-backend-ram,size=1G,id=ram0 \
--object memory-backend-ram,size=1G,id=ram1 \
--object memory-backend-ram,size=1G,id=ram2 \
+-m 1G \
+-smp 3 \
+-object memory-backend-ram,size=100M,id=ram0 \
+-object memory-backend-ram,size=100M,id=ram1 \
+-object memory-backend-ram,size=100M,id=ram2 \
 -numa node,nodeid=0,memdev=ram0,cpus=0-1 \
 -numa node,nodeid=1,memdev=ram1,cpus=2-3 \
 -numa node,nodeid=2,memdev=ram2 \
