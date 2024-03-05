@@ -29,8 +29,8 @@ jobs:
 
     steps:
       - name: test
-        run: pwd
+        run: ls /opt
       - name: test
-        run: ls
+        run: ls /opt/shared
       - name: run build in qemu
         run: /opt/shared/run-qemu.sh
