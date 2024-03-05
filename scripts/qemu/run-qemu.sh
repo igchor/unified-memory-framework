@@ -41,6 +41,7 @@ ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
 while [ $? -ne 0 ]
 do
 echo "Trying to connect..."
+ps -aux | grep qemu
 sleep 5
 ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
 done
