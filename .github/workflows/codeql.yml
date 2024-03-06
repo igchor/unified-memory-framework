@@ -17,7 +17,7 @@ permissions:
 jobs:
   qemu:
     name: Qemu
-    runs-on: ubuntu-20.04
+    runs-on: macos-latest
     container:
       image: ghcr.io/igchor/qemu:ubuntu
       volumes:
