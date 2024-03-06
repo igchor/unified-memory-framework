@@ -1,7 +1,7 @@
 repo=$1
 branch=$2
 
-sudo apt-get update && sudo apt-get install -y git libnuma-dev libjemalloc-dev libtbb-dev libhwloc-dev cmake gcc
+sudo dpkg -i /home/cxltest/*.deb
 
 git clone $repo umf
 cd umf
