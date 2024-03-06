@@ -112,19 +112,19 @@ jobs:
         -daemonize
     - name: ssh keyscan
       run: |
-        ssh-keyscan -p 2222 -H 172.17.0.2 >> ~/.ssh/known_hosts
+        ssh-keyscan -p 2222 -H 127.0.0.1 >> ~/.ssh/known_hosts
         while [ $? -ne 0 ]
         do
           echo "Trying to connect..."
           ps -aux | grep qemu
           sleep 5
-          ssh-keyscan -p 2222 -H 172.17.0.2 >> ~/.ssh/known_hosts
+          ssh-keyscan -p 2222 -H 127.0.0.1 >> ~/.ssh/known_hosts
         done
     - name: ssh to qemu
       run: |
-        scp -P 2222 ${{github.workspace}}/scripts/qemu/run-build.sh cxltest@172.17.0.2:/home/cxltest
-        ssh cxltest@172.17.0.2 -p 2222 -t 'sudo apt update && sudo apt install git libnuma-dev libjemalloc-dev libtbb-dev libhwloc-dev cmake gcc'
-        ssh cxltest@172.17.0.2 -p 2222 -t 'bash /home/cxltest/run-build.sh ${CI_REPO_SLUG} ${CI_BRANCH}'
+        scp -P 2222 ${{github.workspace}}/scripts/qemu/run-build.sh cxltest@127.0.0.1:/home/cxltest
+        ssh cxltest@127.0.0.1 -p 2222 -t 'sudo apt update && sudo apt install git libnuma-dev libjemalloc-dev libtbb-dev libhwloc-dev cmake gcc'
+        ssh cxltest@127.0.0.1 -p 2222 -t 'bash /home/cxltest/run-build.sh ${CI_REPO_SLUG} ${CI_BRANCH}'
 
     
 
