@@ -1,8 +1,9 @@
 repo=$1
 branch=$2
 
+echo password | sudo -Sk apt clean
 echo password | sudo -Sk apt update
-echo password | sudo -Sk apt install git cmake gcc numactl hwloc libnuma-dev
+echo password | sudo -Sk apt install -y git cmake gcc numactl hwloc libnuma-dev
 
 git clone $repo umf
 cd umf
