@@ -109,7 +109,7 @@ jobs:
         -numa hmat-lb,initiator=1,target=1,hierarchy=memory,data-type=access-bandwidth,bandwidth=10485760 \
         -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-latency,latency=27 \
         -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-bandwidth,bandwidth=1048576 \
-        -daemonize
+        -daemonize -display none
     - name: ssh keyscan
       run: |
         ssh-keyscan -p 2222 -H 127.0.0.1 >> ~/.ssh/known_hosts
