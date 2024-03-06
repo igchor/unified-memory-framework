@@ -1,6 +1,8 @@
 repo=$1
 branch=$2
 
+ping 8.8.8.8 -c 3
+
 echo password | sudo -Sk apt clean
 echo password | sudo -Sk apt update
 echo password | sudo -Sk apt install -y git cmake gcc numactl hwloc libnuma-dev
