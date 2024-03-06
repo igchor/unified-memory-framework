@@ -121,11 +121,6 @@ jobs:
           sleep 5
           ssh-keyscan -p 2222 -H 127.0.0.1 >> ~/.ssh/known_hosts
         done
-    - name: download packages
-      run: |
-        sudo rm -rf /var/cache/apt/archives/*
-        sudo apt update && sudo apt reinstall --download-only -y git libnuma-dev libjemalloc-dev libtbb-dev libhwloc-dev cmake gcc 
-        scp -P 2222 /var/cache/apt/archives/*.deb cxltest@127.0.0.1:/home/cxltest
     - name: ssh to qemu
       run: |
         scp -P 2222 ${{github.workspace}}/scripts/qemu/run-build.sh cxltest@127.0.0.1:/home/cxltest
