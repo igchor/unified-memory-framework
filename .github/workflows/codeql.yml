@@ -112,6 +112,7 @@ jobs:
         -daemonize -display none
     - name: ssh keyscan
       run: |
+        set +e
         ssh-keyscan -p 2222 -H 127.0.0.1 >> ~/.ssh/known_hosts
         while [ $? -ne 0 ]
         do
