@@ -109,6 +109,12 @@ jobs:
         -numa hmat-lb,initiator=1,target=1,hierarchy=memory,data-type=access-bandwidth,bandwidth=10485760 \
         -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-latency,latency=27 \
         -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-bandwidth,bandwidth=1048576 \
+        -numa hmat-lb,initiator=2,target=0,hierarchy=memory,data-type=access-latency,latency=10 \
+        -numa hmat-lb,initiator=2,target=0,hierarchy=memory,data-type=access-bandwidth,bandwidth=10485760 \
+        -numa hmat-lb,initiator=2,target=1,hierarchy=memory,data-type=access-latency,latency=20 \
+        -numa hmat-lb,initiator=2,target=1,hierarchy=memory,data-type=access-bandwidth,bandwidth=5242880 \
+        -numa hmat-lb,initiator=2,target=2,hierarchy=memory,data-type=access-latency,latency=16 \
+        -numa hmat-lb,initiator=2,target=2,hierarchy=memory,data-type=access-bandwidth,bandwidth=1048576 \
         -daemonize \
         -display none
 
