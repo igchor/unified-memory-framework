@@ -87,7 +87,7 @@ jobs:
         -object memory-backend-ram,size=100M,id=ram2 \
         -numa node,nodeid=0,memdev=ram0,cpus=0-1 \
         -numa node,nodeid=1,memdev=ram1,cpus=2-3 \
-        -numa node,nodeid=2,memdev=ram2 \
+        -numa node,nodeid=2,memdev=ram2,initiator=0 \
         -numa dist,src=0,dst=0,val=10 \
         -numa dist,src=0,dst=1,val=20 \
         -numa dist,src=0,dst=2,val=17 \
@@ -109,12 +109,6 @@ jobs:
         -numa hmat-lb,initiator=1,target=1,hierarchy=memory,data-type=access-bandwidth,bandwidth=10485760 \
         -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-latency,latency=27 \
         -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-bandwidth,bandwidth=1048576 \
-        -numa hmat-lb,initiator=2,target=0,hierarchy=memory,data-type=access-latency,latency=10 \
-        -numa hmat-lb,initiator=2,target=0,hierarchy=memory,data-type=access-bandwidth,bandwidth=10485760 \
-        -numa hmat-lb,initiator=2,target=1,hierarchy=memory,data-type=access-latency,latency=20 \
-        -numa hmat-lb,initiator=2,target=1,hierarchy=memory,data-type=access-bandwidth,bandwidth=5242880 \
-        -numa hmat-lb,initiator=2,target=2,hierarchy=memory,data-type=access-latency,latency=16 \
-        -numa hmat-lb,initiator=2,target=2,hierarchy=memory,data-type=access-bandwidth,bandwidth=1048576 \
         -daemonize \
         -display none
 
