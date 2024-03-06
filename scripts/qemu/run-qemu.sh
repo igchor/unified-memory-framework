@@ -2,7 +2,6 @@
 
 echo pass | sudo -Sk qemu-system-x86_64 \
 -drive file=/home/user/lunar-server-cloudimg-amd64.img,format=qcow2,index=0,media=disk,id=hd \
--cdrom /var/ubuntu-cloud-init.iso \
 -machine q35,usb=off,hmat=on \
 -enable-kvm -net nic -net user,hostfwd=tcp::2222-:22 \
 -m 300M \
