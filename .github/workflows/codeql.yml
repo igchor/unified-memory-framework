@@ -33,7 +33,7 @@ jobs:
         sudo udevadm trigger --name-match=kvm
     - name: install qemu 
       run: |
-        sudo apt update && sudo apt install qemu-system genisoimg
+        sudo apt update && sudo apt install -y qemu-system genisoimage
     - name: gen key
       run: ssh-keygen -b 4096 -N '' -f ~/.ssh/id_rsa
     - name: geniso
