@@ -123,11 +123,9 @@ jobs:
         done
     - name: download packages
       run: |
-        PACKAGES="git libnuma-dev libjemalloc-dev libtbb-dev libhwloc-dev cmake gcc"
-        apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests \
-          --no-conflicts --no-breaks --no-replaces --no-enhances \
-          --no-pre-depends ${PACKAGES} | grep "^\w")
-        scp -P 2222 *.deb cxltest@127.0.0.1:/home/cxltest
+        sudo rm -rf /var/cache/apt/archives/*
+        sudo apt update && sudo apt reinstall --download-only -y git libnuma-dev libjemalloc-dev libtbb-dev libhwloc-dev cmake gcc 
+        scp -P 2222 /var/cache/apt/archives/*.deb cxltest@127.0.0.1:/home/cxltest
     - name: ssh to qemu
       run: |
         scp -P 2222 ${{github.workspace}}/scripts/qemu/run-build.sh cxltest@127.0.0.1:/home/cxltest
