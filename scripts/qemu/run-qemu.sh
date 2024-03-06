@@ -1,5 +1,13 @@
 #!/bin/bash
 
+echo pass | sudo -Sk su
+
+apt update && apt install udev
+
+echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | tee /etc/udev/rules.d/99-kvm4all.rules
+udevadm control --reload-rules
+udevadm trigger --name-match=kvm
+
 echo pass | sudo -Sk qemu-system-x86_64 \
 -drive file=/home/user/cxl_tcg.img,format=qcow2,index=0,media=disk,id=hd \
 -machine q35,usb=off,hmat=on \
