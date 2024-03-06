@@ -109,23 +109,6 @@ jobs:
         -numa hmat-lb,initiator=1,target=1,hierarchy=memory,data-type=access-bandwidth,bandwidth=10485760 \
         -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-latency,latency=27 \
         -numa hmat-lb,initiator=1,target=2,hierarchy=memory,data-type=access-bandwidth,bandwidth=1048576 \
-        -daemonize \
-        -display none
-
-        # wait for qemu to boot
-        ssh-keyscan -p 2222 -H 172.17.0.2 >> ~/.ssh/known_hosts
-        while [ $? -ne 0 ]
-        do
-          echo "Trying to connect..."
-          ps -aux | grep qemu
-          sleep 5
-          ssh-keyscan -p 2222 -H 172.17.0.2 >> ~/.ssh/known_hosts
-        done
-
-        scp -P 2222 ${{github.workspace}}/scripts/qemu/run-build.sh cxltest@172.17.0.2:/home/cxltest
-
-        ssh cxltest@172.17.0.2 -p 2222 -t 'sudo apt update && sudo apt install git libnuma-dev libjemalloc-dev libtbb-dev libhwloc-dev cmake gcc'
-        ssh cxltest@172.17.0.2 -p 2222 -t 'bash /home/cxltest/run-build.sh ${CI_REPO_SLUG} ${CI_BRANCH}'
-
+        -nographic
 
         
