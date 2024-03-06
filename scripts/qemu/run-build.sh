@@ -1,17 +1,22 @@
+#!/bin/bash
+set -x
+
 repo=$1
 branch=$2
 
-ping 8.8.8.8 -c 3
-
-echo password | sudo -Sk apt clean
 echo password | sudo -Sk apt update
-echo password | sudo -Sk apt install -y git cmake gcc numactl hwloc libnuma-dev
+echo password | sudo -Sk apt install -y git cmake gcc g++ numactl hwloc libhwloc-dev libnuma-dev
+
+numactl -H
 
 git clone $repo umf
 cd umf
 git checkout $branch
 
-cmake -B build \
+mkdir build
+cd build
+
+cmake .. \
     -DCMAKE_BUILD_TYPE=Debug \
     -DUMF_BUILD_OS_MEMORY_PROVIDER=ON \
     -DUMF_ENABLE_POOL_TRACKING=ON \
@@ -21,7 +26,7 @@ cmake -B build \
     -DUMF_BUILD_EXAMPLES=ON \
     -DUMF_BUILD_LEVEL_ZERO_PROVIDER=OFF
 
-cmake --build build -j $(nproc)
+make -j $(nproc)
 
-cd build
-ctest --output-on-failure --test-dir test
+ctest --output-on-failure
+

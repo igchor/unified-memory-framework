@@ -33,7 +33,7 @@ jobs:
         sudo udevadm trigger --name-match=kvm
     - name: install qemu 
       run: |
-        sudo apt update && sudo apt install -y qemu-system genisoimage
+        sudo apt update && sudo apt install -y qemu-system genisoimage qemu-utils
     - name: gen key
       run: ssh-keygen -b 4096 -N '' -f ~/.ssh/id_rsa
     - name: geniso
@@ -72,19 +72,21 @@ jobs:
         sudo -Sk genisoimage -output ubuntu-cloud-init.iso -volid cidata -joliet -rock ./user-data ./meta-data
     - name: download image
       run: wget https://cloud-images.ubuntu.com/lunar/current/lunar-server-cloudimg-amd64.img
+    - name: resize image
+      run: qemu-img resize ./lunar-server-cloudimg-amd64.img +2G
     - name: run qemu
       run: |
-        qemu-system-x86_64 \
+        sudo qemu-system-x86_64 \
         -drive file=./lunar-server-cloudimg-amd64.img,format=qcow2,index=0,media=disk,id=hd \
         -cdrom ./ubuntu-cloud-init.iso \
         -machine q35,usb=off,hmat=on \
         -enable-kvm \
         -net nic -net user,hostfwd=tcp::2222-:22 \
-        -m 300M \
+        -m 600M \
         -smp 4 \
-        -object memory-backend-ram,size=100M,id=ram0 \
-        -object memory-backend-ram,size=100M,id=ram1 \
-        -object memory-backend-ram,size=100M,id=ram2 \
+        -object memory-backend-ram,size=200M,id=ram0 \
+        -object memory-backend-ram,size=200M,id=ram1 \
+        -object memory-backend-ram,size=200M,id=ram2 \
         -numa node,nodeid=0,memdev=ram0,cpus=0-1 \
         -numa node,nodeid=1,memdev=ram1,cpus=2-3 \
         -numa node,nodeid=2,memdev=ram2,initiator=0 \
@@ -124,7 +126,7 @@ jobs:
     - name: ssh to qemu
       run: |
         scp -P 2222 ${{github.workspace}}/scripts/qemu/run-build.sh cxltest@127.0.0.1:/home/cxltest
-        ssh cxltest@127.0.0.1 -p 2222 -t 'bash /home/cxltest/run-build.sh ${CI_REPO_SLUG} ${CI_BRANCH}'
+        ssh cxltest@127.0.0.1 -p 2222 -t 'bash /home/cxltest/run-build.sh ${{env.CI_REPO}} ${{env.CI_BRANCH}}'
 
     
 
