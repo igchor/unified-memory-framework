@@ -36,9 +36,6 @@ echo pass | sudo -Sk qemu-system-x86_64 \
 -daemonize -loadvm cxl_tcg \
 -display none
 
-sleep 5
-echo pass | sudo -Sk kill $(ps -ax | grep defunct | head -n 1 | cut -d '?' -f 1)
-
 # wait for qemu to boot
 ssh-keyscan -p 2222 -H 172.17.0.2 >> /home/user/.ssh/known_hosts
 while [ $? -ne 0 ]

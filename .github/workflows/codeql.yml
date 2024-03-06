@@ -17,7 +17,7 @@ permissions:
 jobs:
   qemu:
     name: Qemu
-    runs-on: ubuntu-22.04
+    runs-on: fedora-39
     container:
       image: ghcr.io/igchor/qemu:ubuntu
       volumes:
