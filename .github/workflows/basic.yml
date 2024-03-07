@@ -178,7 +178,7 @@ jobs:
   windows-build:
     name: Windows
     env:
-      VCPKG_PATH: "${{github.workspace}}/build/vcpkg/packages/hwloc_x64-windows;${{github.workspace}}/build/vcpkg/packages/tbb_x64-windows"
+      VCPKG_PATH: "${{github.workspace}}/build/vcpkg/packages/hwloc_x64-windows"
     strategy:
       matrix:
         os: ['windows-2019', 'windows-2022']
@@ -221,7 +221,9 @@ jobs:
         vcpkgJsonGlob: '**/vcpkg.json'
 
     - name: Install dependencies
-      run: vcpkg install
+      run: |
+        vcpkg install
+        vcpkg integrate install
       shell: pwsh # Specifies PowerShell as the shell for running the script.
 
     - name: Configure build
@@ -240,6 +242,7 @@ jobs:
         -DUMF_BUILD_LIBUMF_POOL_SCALABLE=ON
         -DUMF_BUILD_OS_MEMORY_PROVIDER=${{matrix.os_provider}}
         -DUMF_BUILD_LEVEL_ZERO_PROVIDER=OFF
+        -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/build/vcpkg/scripts/buildsystems/vcpkg.cmake
 
     - name: Build UMF
       run: cmake --build ${{env.BUILD_DIR}} --config ${{matrix.build_type}} -j $Env:NUMBER_OF_PROCESSORS

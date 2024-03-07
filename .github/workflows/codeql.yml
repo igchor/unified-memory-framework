@@ -20,7 +20,7 @@ jobs:
     permissions:
       security-events: write
     env:
-      VCPKG_PATH: "${{github.workspace}}/build/vcpkg/packages/hwloc_x64-windows;${{github.workspace}}/build/vcpkg/packages/tbb_x64-windows"
+      VCPKG_PATH: "${{github.workspace}}/build/vcpkg/packages/hwloc_x64-windows"
     strategy:
       fail-fast: false
       matrix:
@@ -30,6 +30,7 @@ jobs:
             # Windows doesn't recognize 'CMAKE_BUILD_TYPE', it uses '--config' param in build command
             extra_build_option: '-DCMAKE_BUILD_TYPE=Release'
           - os: windows-latest
+            extra_build_option: '-DCMAKE_TOOLCHAIN_FILE="${{github.workspace}}/build/vcpkg/scripts/buildsystems/vcpkg.cmake"'
     runs-on: ${{matrix.os}}
 
     steps:
@@ -51,7 +52,9 @@ jobs:
 
     - name: Install dependencies
       if: ${{ matrix.os == 'windows-latest' }}
-      run: vcpkg install
+      run: |
+        vcpkg install
+        vcpkg integrate install
       shell: pwsh # Specifies PowerShell as the shell for running the script.
 
     - name: Install apt packages
