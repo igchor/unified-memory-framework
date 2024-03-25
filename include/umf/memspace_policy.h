@@ -18,6 +18,22 @@ extern "C" {
 
 typedef struct umf_memspace_policy_t *umf_memspace_policy_handle_t;
 
+///
+/// \brief Retrieves predefined 'strict' policy.
+///        Memory is allocated from the first node in a memspace. If there is not enough
+///        memory on the node, allocation will fail.
+/// \return policy handle on success or NULL on failure.
+///
+umf_memspace_policy_handle_t umfMemspacePolicyStrictGet(void);
+
+///
+/// \brief Retrieves predefined 'preferred' policy.
+///        Memory is allocated from the first node in a memspace. If there is not enough
+///        memory on the node, allocation will be attempted on other nodes (in unspecified order).
+/// \return policy handle on success or NULL on failure.
+///
+umf_memspace_policy_handle_t umfMemspacePolicyPreferredGet(void);
+
 #ifdef __cplusplus
 }
 #endif

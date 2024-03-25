@@ -24,6 +24,8 @@ UMF_1.0 {
         umfMemspaceDestroy;
         umfMemspaceHighestCapacityGet;
         umfMemspaceHostAllGet;
+        umfMemspacePolicyPreferredGet;
+        umfMemspacePolicyStrictGet;
         umfOsMemoryProviderOps;
         umfPoolAlignedMalloc;
         umfPoolByPtr;

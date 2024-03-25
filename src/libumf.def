@@ -26,6 +26,8 @@ EXPORTS
     umfMemoryProviderPurgeForce
     umfMemoryProviderPurgeLazy
     umfMemspaceDestroy
+    umfMemspacePolicyPreferredGet
+    umfMemspacePolicyStrictGet
     umfPoolAlignedMalloc
     umfPoolByPtr
     umfPoolCalloc

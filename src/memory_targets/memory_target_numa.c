@@ -11,6 +11,7 @@
 #include <hwloc.h>
 #include <stdlib.h>
 
+#include <umf/memspace_policy.h>
 #include <umf/pools/pool_disjoint.h>
 #include <umf/providers/provider_os_memory.h>
 
@@ -106,8 +107,13 @@ static enum umf_result_t numa_memory_provider_create_from_memspace(
     umf_memspace_policy_handle_t policy,
     umf_memory_provider_handle_t *provider) {
     (void)memspace;
-    // TODO: apply policy
-    (void)policy;
+
+    assert(numTargets);
+
+    if (policy != umfMemspacePolicyStrictGet() &&
+        policy != umfMemspacePolicyPreferredGet()) {
+        return UMF_RESULT_ERROR_INVALID_ARGUMENT;
+    }
 
     struct numa_memory_target_t **numaTargets =
         (struct numa_memory_target_t **)memTargets;
@@ -115,9 +121,22 @@ static enum umf_result_t numa_memory_provider_create_from_memspace(
     unsigned long *nodemask;
     unsigned maxnode;
     size_t nodemask_size;
+    umf_numa_mode_t numa_mode;
+    size_t provider_nodes;
+
+    if (policy == umfMemspacePolicyStrictGet()) {
+        numa_mode = UMF_NUMA_MODE_BIND;
+        provider_nodes = 1;
+    } else if (policy == umfMemspacePolicyPreferredGet()) {
+        numa_mode = UMF_NUMA_MODE_PREFERRED;
+        provider_nodes = 1;
+    } else { // default policy (policy == nullptr)
+        numa_mode = UMF_NUMA_MODE_BIND;
+        provider_nodes = numTargets;
+    }
 
     umf_result_t ret = numa_targets_create_nodemask(
-        numaTargets, numTargets, &nodemask, &maxnode, &nodemask_size);
+        numaTargets, provider_nodes, &nodemask, &maxnode, &nodemask_size);
     if (ret != UMF_RESULT_SUCCESS) {
         return ret;
     }
@@ -125,7 +144,7 @@ static enum umf_result_t numa_memory_provider_create_from_memspace(
     umf_os_memory_provider_params_t params = umfOsMemoryProviderParamsDefault();
     params.nodemask = nodemask;
     params.maxnode = maxnode;
-    params.numa_mode = UMF_NUMA_MODE_BIND;
+    params.numa_mode = numa_mode;
 
     umf_memory_provider_handle_t numaProvider = NULL;
     ret = umfMemoryProviderCreate(umfOsMemoryProviderOps(), &params,
