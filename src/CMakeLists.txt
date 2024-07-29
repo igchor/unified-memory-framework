@@ -153,14 +153,11 @@ elseif(MACOSX)
 endif()
 
 if(UMF_BUILD_SHARED_LIBRARY)
-    if(NOT UMF_DISABLE_HWLOC)
-        set(HWLOC_LIB hwloc)
-    endif()
     add_umf_library(
         NAME umf
         TYPE SHARED
         SRCS ${UMF_SOURCES}
-        LIBS ${UMF_LIBS} ${HWLOC_LIB}
+        LIBS ${UMF_LIBS}
         LINUX_MAP_FILE ${CMAKE_CURRENT_BINARY_DIR}/libumf.map
         WINDOWS_DEF_FILE ${CMAKE_CURRENT_BINARY_DIR}/libumf.def)
     set(UMF_COMMON_COMPILE_DEFINITIONS ${UMF_COMMON_COMPILE_DEFINITIONS}
