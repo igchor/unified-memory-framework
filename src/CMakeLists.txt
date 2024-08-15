@@ -9,7 +9,7 @@ include(${UMF_CMAKE_SOURCE_DIR}/cmake/helpers.cmake)
 # TODO: Cleanup the compile definitions across all the CMake files
 set(UMF_COMMON_COMPILE_DEFINITIONS UMF_VERSION=${UMF_VERSION})
 
-if(UMF_BUILD_LEVEL_ZERO_PROVIDER)
+if(UMF_BUILD_LEVEL_ZERO_PROVIDER AND UMF_FETCH_LEVEL_ZERO)
     include(FetchContent)
 
     set(LEVEL_ZERO_LOADER_REPO "https://github.com/oneapi-src/level-zero.git")
