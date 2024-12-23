@@ -110,6 +110,7 @@ UMF_1.0 {
         umfScalablePoolParamsDestroy;
         umfScalablePoolParamsSetGranularity;
         umfScalablePoolParamsSetKeepAllMemory;
+        umfLevelZeroProviderParamsSetZeOps;
     local:
         *;
 };

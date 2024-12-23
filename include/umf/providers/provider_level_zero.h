@@ -10,9 +10,37 @@
 
 #include <umf/memory_provider_gpu.h>
 
+#include <ze_api.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct ze_ops_t {
+    ze_result_t (*zeMemAllocHost)(ze_context_handle_t,
+                                  const ze_host_mem_alloc_desc_t *, size_t,
+                                  size_t, void **);
+    ze_result_t (*zeMemAllocDevice)(ze_context_handle_t,
+                                    const ze_device_mem_alloc_desc_t *, size_t,
+                                    size_t, ze_device_handle_t, void **);
+    ze_result_t (*zeMemAllocShared)(ze_context_handle_t,
+                                    const ze_device_mem_alloc_desc_t *,
+                                    const ze_host_mem_alloc_desc_t *, size_t,
+                                    size_t, ze_device_handle_t, void **);
+    ze_result_t (*zeMemFree)(ze_context_handle_t, void *);
+    ze_result_t (*zeMemGetIpcHandle)(ze_context_handle_t, const void *,
+                                     ze_ipc_mem_handle_t *);
+    ze_result_t (*zeMemPutIpcHandle)(ze_context_handle_t, ze_ipc_mem_handle_t);
+    ze_result_t (*zeMemOpenIpcHandle)(ze_context_handle_t, ze_device_handle_t,
+                                      ze_ipc_mem_handle_t,
+                                      ze_ipc_memory_flags_t, void **);
+    ze_result_t (*zeMemCloseIpcHandle)(ze_context_handle_t, const void *);
+    ze_result_t (*zeContextMakeMemoryResident)(ze_context_handle_t,
+                                               ze_device_handle_t, void *,
+                                               size_t);
+    ze_result_t (*zeDeviceGetProperties)(ze_device_handle_t,
+                                         ze_device_properties_t *);
+} ze_ops_t;
 
 typedef struct _ze_device_handle_t *ze_device_handle_t;
 typedef struct _ze_context_handle_t *ze_context_handle_t;
@@ -67,6 +95,8 @@ umf_result_t umfLevelZeroMemoryProviderParamsSetMemoryType(
 umf_result_t umfLevelZeroMemoryProviderParamsSetResidentDevices(
     umf_level_zero_memory_provider_params_handle_t hParams,
     ze_device_handle_t *hDevices, uint32_t deviceCount);
+
+umf_result_t umfLevelZeroProviderParamsSetZeOps(umf_level_zero_memory_provider_params_handle_t hParams, ze_ops_t *zeOps);
 
 umf_memory_provider_ops_t *umfLevelZeroMemoryProviderOps(void);
 
