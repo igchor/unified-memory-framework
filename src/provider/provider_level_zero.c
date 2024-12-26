@@ -329,6 +329,10 @@ static umf_result_t ze_memory_provider_initialize(void *params,
         ze_provider->ze_ops = ze_params->ze_ops;
     }
 
+    memset(&ze_provider->device_properties, 0,
+               sizeof(ze_provider->device_properties));
+    ze_provider->device_properties.stype = ZE_STRUCTURE_TYPE_DEVICE_PROPERTIES;
+
     if (ze_provider->device) {
         umf_result_t ret = ze2umf_result(ze_provider->ze_ops.zeDeviceGetProperties(
             ze_provider->device, &ze_provider->device_properties));
@@ -338,9 +342,6 @@ static umf_result_t ze_memory_provider_initialize(void *params,
             umf_ba_global_free(ze_provider);
             return ret;
         }
-    } else {
-        memset(&ze_provider->device_properties, 0,
-               sizeof(ze_provider->device_properties));
     }
 
     if (ze_params->resident_device_count) {
