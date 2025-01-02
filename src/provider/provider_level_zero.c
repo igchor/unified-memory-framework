@@ -91,6 +91,8 @@ typedef struct umf_level_zero_memory_provider_params_t {
         resident_device_handles; ///< Array of devices for which the memory should be made resident
     uint32_t
         resident_device_count; ///< Number of devices for which the memory should be made resident
+
+    uint32_t device_ordinal;
 } umf_level_zero_memory_provider_params_t;
 
 typedef struct ze_memory_provider_t {
@@ -103,6 +105,8 @@ typedef struct ze_memory_provider_t {
 
     ze_device_properties_t device_properties;
     size_t min_page_size;
+
+    uint32_t device_ordinal;
 } ze_memory_provider_t;
 
 typedef struct ze_ops_t {
@@ -222,6 +226,7 @@ umf_result_t umfLevelZeroMemoryProviderParamsCreate(
     params->memory_type = UMF_MEMORY_TYPE_UNKNOWN;
     params->resident_device_handles = NULL;
     params->resident_device_count = 0;
+    params->device_ordinal = 0;
 
     *hParams = params;
 
@@ -298,6 +303,19 @@ umf_result_t umfLevelZeroMemoryProviderParamsSetResidentDevices(
     return UMF_RESULT_SUCCESS;
 }
 
+umf_result_t umfLevelZeroMemoryProviderSetDeviceOrdinal(
+    umf_level_zero_memory_provider_params_handle_t hParams,
+    uint32_t deviceOrdinal) {
+    if (!hParams) {
+        LOG_ERR("Level zero memory provider params handle is NULL");
+        return UMF_RESULT_ERROR_INVALID_ARGUMENT;
+    }
+
+    hParams->device_ordinal = deviceOrdinal;
+
+    return UMF_RESULT_SUCCESS;
+}
+
 static bool use_relaxed_allocation(ze_memory_provider_t *ze_provider,
                                    size_t size) {
     assert(ze_provider);
@@ -335,8 +353,7 @@ static umf_result_t ze_memory_provider_alloc(void *provider, size_t size,
                          ? &relaxed_device_allocation_desc
                          : NULL,
             .flags = 0,
-            .ordinal = 0 // TODO
-        };
+            .ordinal = ze_provider->device_ordinal};
         ze_result = g_ze_ops.zeMemAllocDevice(ze_provider->context, &dev_desc,
                                               size, alignment,
                                               ze_provider->device, resultPtr);
@@ -353,8 +370,7 @@ static umf_result_t ze_memory_provider_alloc(void *provider, size_t size,
                          ? &relaxed_device_allocation_desc
                          : NULL,
             .flags = 0,
-            .ordinal = 0 // TODO
-        };
+            .ordinal = ze_provider->device_ordinal};
         ze_result = g_ze_ops.zeMemAllocShared(ze_provider->context, &dev_desc,
                                               &host_desc, size, alignment,
                                               ze_provider->device, resultPtr);
@@ -471,6 +487,7 @@ static umf_result_t ze_memory_provider_initialize(void *params,
     ze_provider->device = ze_params->level_zero_device_handle;
     ze_provider->memory_type = (ze_memory_type_t)ze_params->memory_type;
     ze_provider->min_page_size = 0;
+    ze_provider->device_ordinal = ze_params->device_ordinal;
 
     memset(&ze_provider->device_properties, 0,
            sizeof(ze_provider->device_properties));

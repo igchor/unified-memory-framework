@@ -68,6 +68,14 @@ umf_result_t umfLevelZeroMemoryProviderParamsSetResidentDevices(
     umf_level_zero_memory_provider_params_handle_t hParams,
     ze_device_handle_t *hDevices, uint32_t deviceCount);
 
+/// @brief  Set the device ordinal in the parameters struct.
+/// @param  hParams handle to the parameters of the Level Zero Memory Provider.
+/// @param  deviceOrdinal device ordinal.
+/// @return UMF_RESULT_SUCCESS on success or appropriate error code on failure.
+umf_result_t umfLevelZeroMemoryProviderSetDeviceOrdinal(
+    umf_level_zero_memory_provider_params_handle_t hParams,
+    uint32_t deviceOrdinal);
+
 umf_memory_provider_ops_t *umfLevelZeroMemoryProviderOps(void);
 
 #ifdef __cplusplus
